@@ -1,5 +1,5 @@
 """
-URL configuration for saas project.
+URL configuration for blog project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.0/topics/http/urls/
@@ -16,10 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from .views import home_page_view
+from . import views
 
 urlpatterns = [
-    path('', home_page_view),
-    path('admin/', admin.site.urls),
-    path('blog/', include('blog.urls')),
+    path('', views.home_page_view, name='home'),
+    path('admin/', include('blog.urls')),
+    path('django-admin/', admin.site.urls),
 ]

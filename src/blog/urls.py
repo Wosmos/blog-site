@@ -5,9 +5,9 @@ app_name = 'blog'
 
 urlpatterns = [
     # Authentication URLs
-    path('admin/login/', auth_views.blog_admin_login, name='admin_login'),
-    path('admin/logout/', auth_views.blog_admin_logout, name='admin_logout'),
+    path('login/', auth_views.blog_admin_login, name='admin_login'),
+    path('logout/', auth_views.blog_admin_logout, name='admin_logout'),
     
-    # Admin dashboard (placeholder for now)
-    path('admin/', views.admin_dashboard, name='admin_dashboard'),
+    # Admin dashboard
+    path('', views.admin_dashboard, name='admin_dashboard'),
 ]
