@@ -1,0 +1,106 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}{{ title }} - Blog Admin{% endblock %}
+
+{% block body %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="text-center mb-4">
+            <h2 class="h3 mb-3 fw-normal">Blog Admin Login</h2>
+            <p class="text-muted">Sign in to manage your blog</p>
+        </div>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        <form method="post" novalidate>
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" 
+                       class="form-control" 
+                       id="username" 
+                       name="username" 
+                       required 
+                       autofocus
+                       placeholder="Enter your username">
+            </div>
+            
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" 
+                       class="form-control" 
+                       id="password" 
+                       name="password" 
+                       required
+                       placeholder="Enter your password">
+            </div>
+            
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    Sign In
+                </button>
+            </div>
+        </form>
+        
+        <div class="text-center mt-4">
+            <small class="text-muted">
+                Secure blog administration interface
+            </small>
+        </div>
+    </div>
+</div>
+
+<script>
+// Client-side form validation
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        // Reset previous validation states
+        [usernameInput, passwordInput].forEach(input => {
+            input.classList.remove('is-invalid');
+        });
+        
+        // Validate username
+        if (!usernameInput.value.trim()) {
+            usernameInput.classList.add('is-invalid');
+            isValid = false;
+        }
+        
+        // Validate password
+        if (!passwordInput.value.trim()) {
+            passwordInput.classList.add('is-invalid');
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
+    
+    // Real-time validation feedback
+    [usernameInput, passwordInput].forEach(input => {
+        input.addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                this.classList.remove('is-valid');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

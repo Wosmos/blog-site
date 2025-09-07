@@ -1,0 +1,120 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}{{ title }} - Blog Admin{% endblock %}
+
+{% block body %}
+<!-- Admin Header -->
+<header class="admin-header">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col">
+                <h1 class="h4 mb-0">Blog Admin Dashboard</h1>
+            </div>
+            <div class="col-auto">
+                <div class="dropdown">
+                    <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        {{ user.get_full_name|default:user.username }}
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'blog:admin_logout' %}">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 sidebar">
+            <div class="position-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'blog:admin_dashboard' %}">
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="alert('Blog management features coming soon!')">
+                            All Posts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="alert('Blog management features coming soon!')">
+                            Create New Post
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 main-content">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h2>Welcome, {{ user.get_full_name|default:user.username }}!</h2>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Blog Posts</h5>
+                            <p class="card-text">Manage your blog posts, create new content, and edit existing articles.</p>
+                            <a href="#" class="btn btn-primary" onclick="alert('Blog management features coming soon!')">
+                                Manage Posts
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Create New Post</h5>
+                            <p class="card-text">Start writing a new blog post with our markdown editor.</p>
+                            <a href="#" class="btn btn-success" onclick="alert('Blog creation features coming soon!')">
+                                New Post
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Settings</h5>
+                            <p class="card-text">Configure your blog settings and preferences.</p>
+                            <a href="#" class="btn btn-secondary" onclick="alert('Settings features coming soon!')">
+                                Settings
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Quick Stats</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted">Blog statistics and analytics will be displayed here once the blog management features are implemented.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
