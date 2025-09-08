@@ -1,120 +1,205 @@
-{% extends 'blog/base.html' %}
+{% extends "blog/base.html" %}
 
-{% block title %}{{ title }} - Blog Admin{% endblock %}
+{% block title %}{{ title }} - Blog Admin{% endblock title %}
 
-{% block body %}
-<!-- Admin Header -->
-<header class="admin-header">
-    <div class="container-fluid">
-        <div class="row align-items-center">
-            <div class="col">
-                <h1 class="h4 mb-0">Blog Admin Dashboard</h1>
-            </div>
-            <div class="col-auto">
-                <div class="dropdown">
-                    <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        {{ user.get_full_name|default:user.username }}
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{% url 'blog:admin_logout' %}">Logout</a></li>
-                    </ul>
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <!-- Logo and Brand -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <div class="h-8 w-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-blog text-white text-sm"></i>
+                        </div>
+                        <h1 class="text-xl font-bold text-gray-900">Blog Admin</h1>
+                    </div>
+                </div>
+
+                <!-- User Menu -->
+                <div class="flex items-center">
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <div class="h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-2">
+                                <span class="text-white text-sm font-medium">{{ user.username|first|upper }}</span>
+                            </div>
+                            <span class="text-gray-700 font-medium">{{ user.get_full_name|default:user.username }}</span>
+                            <i class="fas fa-chevron-down ml-2 text-gray-400 text-xs"></i>
+                        </button>
+                        
+                        <div x-show="open" @click.away="open = false" x-transition class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                            <div class="py-1">
+                                <a href="{% url 'blog:admin_logout' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-sign-out-alt mr-2 text-gray-400"></i>
+                                    Sign Out
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</header>
+    </nav>
 
-<div class="container-fluid">
-    <div class="row">
+    <div class="flex">
         <!-- Sidebar -->
-        <nav class="col-md-3 col-lg-2 sidebar">
-            <div class="position-sticky">
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'blog:admin_dashboard' %}">
+        <div class="w-64 bg-white shadow-sm min-h-screen">
+            <nav class="mt-8 px-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="{% url 'blog:admin_dashboard' %}" class="bg-blue-50 text-blue-700 group flex items-center px-4 py-3 text-sm font-medium rounded-lg">
+                            <i class="fas fa-tachometer-alt mr-3 text-blue-500"></i>
                             Dashboard
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="alert('Blog management features coming soon!')">
+                    <li>
+                        <a href="{% url 'blog:list' %}" class="text-gray-700 hover:bg-gray-50 group flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors">
+                            <i class="fas fa-list mr-3 text-gray-400 group-hover:text-gray-500"></i>
                             All Posts
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="alert('Blog management features coming soon!')">
+                    <li>
+                        <a href="{% url 'blog:create' %}" class="text-gray-700 hover:bg-gray-50 group flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors">
+                            <i class="fas fa-plus mr-3 text-gray-400 group-hover:text-gray-500"></i>
                             Create New Post
                         </a>
                     </li>
                 </ul>
-            </div>
-        </nav>
-        
+            </nav>
+        </div>
+
         <!-- Main Content -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 main-content">
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-            
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h2>Welcome, {{ user.get_full_name|default:user.username }}!</h2>
+        <div class="flex-1 p-8">
+            <!-- Welcome Header -->
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Welcome back, {{ user.get_full_name|default:user.username }}!</h2>
+                <p class="text-gray-600">Here's what's happening with your blog today.</p>
             </div>
-            
-            <div class="row">
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Blog Posts</h5>
-                            <p class="card-text">Manage your blog posts, create new content, and edit existing articles.</p>
-                            <a href="#" class="btn btn-primary" onclick="alert('Blog management features coming soon!')">
-                                Manage Posts
-                            </a>
+
+            <!-- Quick Actions Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Manage Posts Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                    <div class="flex items-center mb-4">
+                        <div class="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-list text-blue-600 text-xl"></i>
                         </div>
+                        <h3 class="ml-4 text-lg font-semibold text-gray-900">Blog Posts</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">Manage your blog posts, edit existing content, and organize your articles.</p>
+                    <a href="{% url 'blog:list' %}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-arrow-right mr-2"></i>
+                        Manage Posts
+                    </a>
+                </div>
+
+                <!-- Create New Post Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                    <div class="flex items-center mb-4">
+                        <div class="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-plus text-green-600 text-xl"></i>
+                        </div>
+                        <h3 class="ml-4 text-lg font-semibold text-gray-900">Create New Post</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">Start writing a new blog post with our powerful markdown editor.</p>
+                    <a href="{% url 'blog:create' %}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors">
+                        <i class="fas fa-pen mr-2"></i>
+                        New Post
+                    </a>
+                </div>
+
+                <!-- Settings Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                    <div class="flex items-center mb-4">
+                        <div class="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-cog text-purple-600 text-xl"></i>
+                        </div>
+                        <h3 class="ml-4 text-lg font-semibold text-gray-900">Settings</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">Configure your blog settings, preferences, and account details.</p>
+                    <button onclick="showComingSoon()" class="inline-flex items-center px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors">
+                        <i class="fas fa-tools mr-2"></i>
+                        Settings
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900">Quick Overview</h3>
+                    <div class="flex items-center text-sm text-gray-500">
+                        <i class="fas fa-clock mr-1"></i>
+                        Last updated: just now
                     </div>
                 </div>
                 
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Create New Post</h5>
-                            <p class="card-text">Start writing a new blog post with our markdown editor.</p>
-                            <a href="#" class="btn btn-success" onclick="alert('Blog creation features coming soon!')">
-                                New Post
-                            </a>
-                        </div>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <div class="text-2xl font-bold text-gray-900 mb-1">0</div>
+                        <div class="text-sm text-gray-600">Total Posts</div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <div class="text-2xl font-bold text-gray-900 mb-1">0</div>
+                        <div class="text-sm text-gray-600">Published</div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <div class="text-2xl font-bold text-gray-900 mb-1">0</div>
+                        <div class="text-sm text-gray-600">Drafts</div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-50 rounded-lg">
+                        <div class="text-2xl font-bold text-gray-900 mb-1">0</div>
+                        <div class="text-sm text-gray-600">Views</div>
                     </div>
                 </div>
-                
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Settings</h5>
-                            <p class="card-text">Configure your blog settings and preferences.</p>
-                            <a href="#" class="btn btn-secondary" onclick="alert('Settings features coming soon!')">
-                                Settings
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row mt-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">Quick Stats</h5>
-                        </div>
-                        <div class="card-body">
-                            <p class="text-muted">Blog statistics and analytics will be displayed here once the blog management features are implemented.</p>
-                        </div>
+
+                <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <div class="flex items-center">
+                        <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+                        <span class="text-blue-800 text-sm">
+                            Blog statistics and analytics will be displayed here once you start creating posts.
+                        </span>
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}
+
+{% block extra_js %}
+<!-- Alpine.js for interactive components -->
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+<script>
+    function showComingSoon() {
+        // Create a beautiful modal instead of alert
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+            <div class="bg-white rounded-xl p-8 max-w-md mx-4 shadow-2xl">
+                <div class="text-center">
+                    <div class="h-16 w-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-rocket text-purple-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Coming Soon!</h3>
+                    <p class="text-gray-600 mb-6">Settings and advanced features are currently in development. Stay tuned for updates!</p>
+                    <button onclick="this.closest('.fixed').remove()" class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                        Got it
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // Remove modal when clicking outside
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+    }
+</script>
+{% endblock extra_js %}

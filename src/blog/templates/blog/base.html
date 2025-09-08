@@ -1,73 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full bg-gray-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ title|default:"Blog Admin" }}{% endblock %}</title>
     
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Custom CSS -->
-    <style>
-        .login-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    <!-- Flowbite CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                            950: '#172554'
+                        }
+                    }
+                }
+            }
         }
-        
-        .login-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            width: 100%;
-            max-width: 400px;
-        }
-        
-        .admin-header {
-            background: #343a40;
-            color: white;
-            padding: 1rem 0;
-        }
-        
-        .sidebar {
-            background: #f8f9fa;
-            min-height: calc(100vh - 76px);
-            padding: 1rem 0;
-        }
-        
-        .main-content {
-            padding: 2rem;
-        }
-    </style>
+    </script>
     
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body class="h-full">
     {% block body %}
-    <div class="container-fluid">
-        {% if messages %}
-            <div class="row">
-                <div class="col-12">
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    {% endfor %}
+    <!-- Messages -->
+    {% if messages %}
+        <div class="fixed top-4 right-4 z-50 space-y-2">
+            {% for message in messages %}
+                <div id="toast-{{ forloop.counter }}" class="flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
+                    <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 {% if message.tags == 'success' %}text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200{% elif message.tags == 'error' %}text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200{% elif message.tags == 'warning' %}text-orange-500 bg-orange-100 rounded-lg dark:bg-orange-700 dark:text-orange-200{% else %}text-blue-500 bg-blue-100 rounded-lg dark:bg-blue-800 dark:text-blue-200{% endif %}">
+                        {% if message.tags == 'success' %}
+                            <i class="fas fa-check"></i>
+                        {% elif message.tags == 'error' %}
+                            <i class="fas fa-times"></i>
+                        {% elif message.tags == 'warning' %}
+                            <i class="fas fa-exclamation-triangle"></i>
+                        {% else %}
+                            <i class="fas fa-info"></i>
+                        {% endif %}
+                    </div>
+                    <div class="ms-3 text-sm font-normal">{{ message }}</div>
+                    <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" data-dismiss-target="#toast-{{ forloop.counter }}" aria-label="Close">
+                        <span class="sr-only">Close</span>
+                        <i class="fas fa-times text-xs"></i>
+                    </button>
                 </div>
-            </div>
-        {% endif %}
-        
-        {% block content %}{% endblock %}
-    </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    {% block content %}{% endblock %}
     {% endblock %}
     
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Flowbite JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+    
+    <!-- Auto-dismiss toasts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-dismiss toasts after 5 seconds
+            const toasts = document.querySelectorAll('[id^="toast-"]');
+            toasts.forEach(toast => {
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 300);
+                }, 5000);
+            });
+        });
+    </script>
     
     {% block extra_js %}{% endblock %}
 </body>

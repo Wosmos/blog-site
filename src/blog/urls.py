@@ -10,4 +10,10 @@ urlpatterns = [
     
     # Admin dashboard
     path('', views.admin_dashboard, name='admin_dashboard'),
+    
+    # Blog CRUD URLs
+    path('posts/', views.BlogListView.as_view(), name='list'),
+    path('posts/create/', views.BlogCreateView.as_view(), name='create'),
+    path('posts/<slug:slug>/', views.BlogDetailView.as_view(), name='detail'),
+    path('posts/<slug:slug>/edit/', views.BlogUpdateView.as_view(), name='update'),
 ]

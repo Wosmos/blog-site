@@ -1,0 +1,347 @@
+{% extends "blog/base.html" %}
+
+{% block title %}{{ title }} - Blog Admin{% endblock title %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <!-- Logo and Brand -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <div class="h-8 w-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-blog text-white text-sm"></i>
+                        </div>
+                        <h1 class="text-xl font-bold text-gray-900">Blog Admin</h1>
+                    </div>
+                </div>
+
+                <!-- User Menu -->
+                <div class="flex items-center">
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <div class="h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-2">
+                                <span class="text-white text-sm font-medium">{{ user.username|first|upper }}</span>
+                            </div>
+                            <span class="text-gray-700 font-medium">{{ user.get_full_name|default:user.username }}</span>
+                            <i class="fas fa-chevron-down ml-2 text-gray-400 text-xs"></i>
+                        </button>
+                        
+                        <div x-show="open" @click.away="open = false" x-transition class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                            <div class="py-1">
+                                <a href="{% url 'blog:admin_logout' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-sign-out-alt mr-2 text-gray-400"></i>
+                                    Sign Out
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="w-64 bg-white shadow-sm min-h-screen">
+            <nav class="mt-8 px-4">
+                <ul class="space-y-2">
+                    <li>
+                        <a href="{% url 'blog:admin_dashboard' %}" class="text-gray-700 hover:bg-gray-50 group flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors">
+                            <i class="fas fa-tachometer-alt mr-3 text-gray-400 group-hover:text-gray-500"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'blog:list' %}" class="bg-blue-50 text-blue-700 group flex items-center px-4 py-3 text-sm font-medium rounded-lg">
+                            <i class="fas fa-list mr-3 text-blue-500"></i>
+                            All Posts
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'blog:create' %}" class="text-gray-700 hover:bg-gray-50 group flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors">
+                            <i class="fas fa-plus mr-3 text-gray-400 group-hover:text-gray-500"></i>
+                            Create New Post
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 p-8">
+            <!-- Page Header -->
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-900">{{ title }}</h2>
+                    <p class="text-gray-600 mt-1">Manage and organize your blog posts</p>
+                </div>
+                <a href="{% url 'blog:create' %}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
+                    <i class="fas fa-plus mr-2"></i>
+                    New Post
+                </a>
+            </div>
+
+            <!-- Search and Filter Section -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="md:col-span-2">
+                        <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Search Posts</label>
+                        <input type="text" id="search" name="search" value="{{ search_query }}" 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="Search by title, content, or author...">
+                    </div>
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Filter by Status</label>
+                        <select id="status" name="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">All Statuses</option>
+                            {% for value, label in status_choices %}
+                                <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="flex items-end space-x-2">
+                        <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-search mr-2"></i>Search
+                        </button>
+                        <a href="{% url 'blog:list' %}" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                            Clear
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Results Summary -->
+            <div class="mb-6">
+                <p class="text-gray-600">
+                    Showing {{ total_posts }} post{{ total_posts|pluralize }}
+                    {% if search_query %}
+                        matching "<span class="font-medium">{{ search_query }}</span>"
+                    {% endif %}
+                    {% if status_filter %}
+                        with status "<span class="font-medium">{{ status_filter }}</span>"
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Blog Posts -->
+            {% if blog_posts %}
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Author</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Updated</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for post in blog_posts %}
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="px-6 py-4">
+                                            <div>
+                                                <a href="{% url 'blog:detail' slug=post.slug %}" class="text-blue-600 hover:text-blue-800 font-medium">
+                                                    {{ post.title }}
+                                                </a>
+                                                {% if post.excerpt %}
+                                                    <div class="text-gray-500 text-sm mt-1">
+                                                        {{ post.excerpt|truncatewords:15 }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-900">
+                                            {{ post.author.get_full_name|default:post.author.username }}
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {% if post.status == 'published' %}bg-green-100 text-green-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                                {{ post.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-500">
+                                            <div>{{ post.created_at|date:"M d, Y" }}</div>
+                                            <div class="text-xs text-gray-400">{{ post.created_at|time:"g:i A" }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm text-gray-500">
+                                            <div>{{ post.updated_at|date:"M d, Y" }}</div>
+                                            <div class="text-xs text-gray-400">{{ post.updated_at|time:"g:i A" }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm font-medium">
+                                            <div class="flex space-x-2">
+                                                <a href="{% url 'blog:detail' slug=post.slug %}" class="text-blue-600 hover:text-blue-900 px-3 py-1 rounded-md hover:bg-blue-50 transition-colors">
+                                                    <i class="fas fa-eye mr-1"></i>View
+                                                </a>
+                                                <a href="{% url 'blog:update' slug=post.slug %}" class="text-gray-600 hover:text-gray-900 px-3 py-1 rounded-md hover:bg-gray-50 transition-colors">
+                                                    <i class="fas fa-edit mr-1"></i>Edit
+                                                </a>
+                                                <button onclick="showDeleteModal('{{ post.title }}', '{{ post.slug }}')" class="text-red-600 hover:text-red-900 px-3 py-1 rounded-md hover:bg-red-50 transition-colors">
+                                                    <i class="fas fa-trash mr-1"></i>Delete
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                {% if is_paginated %}
+                    <div class="mt-6 flex items-center justify-between">
+                        <div class="text-sm text-gray-700">
+                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }} 
+                            ({{ page_obj.paginator.count }} total posts)
+                        </div>
+                        <nav class="flex space-x-2">
+                            {% if page_obj.has_previous %}
+                                <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page=1" class="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">
+                                    First
+                                </a>
+                                <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ page_obj.previous_page_number }}" class="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">
+                                    Previous
+                                </a>
+                            {% endif %}
+                            
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <span class="px-3 py-2 text-sm bg-blue-600 text-white border border-blue-600 rounded-md">{{ num }}</span>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ num }}" class="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">{{ num }}</a>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if page_obj.has_next %}
+                                <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ page_obj.next_page_number }}" class="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">
+                                    Next
+                                </a>
+                                <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if status_filter %}status={{ status_filter }}&{% endif %}page={{ page_obj.paginator.num_pages }}" class="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">
+                                    Last
+                                </a>
+                            {% endif %}
+                        </nav>
+                    </div>
+                {% endif %}
+
+            {% else %}
+                <!-- Empty State -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+                    <div class="mx-auto h-24 w-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-file-alt text-gray-400 text-3xl"></i>
+                    </div>
+                    {% if search_query or status_filter %}
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No posts found</h3>
+                        <p class="text-gray-500 mb-6">
+                            No blog posts match your current search criteria. 
+                            Try adjusting your search terms or filters.
+                        </p>
+                        <a href="{% url 'blog:list' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-times mr-2"></i>Clear Filters
+                        </a>
+                    {% else %}
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No blog posts yet</h3>
+                        <p class="text-gray-500 mb-6">
+                            You haven't created any blog posts yet. 
+                            Get started by creating your first post!
+                        </p>
+                        <a href="{% url 'blog:create' %}" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
+                            <i class="fas fa-plus mr-2"></i>Create Your First Post
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-xl p-6 max-w-md mx-4 shadow-2xl">
+        <div class="flex items-center mb-4">
+            <div class="h-12 w-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
+                <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900">Delete Post</h3>
+                <p class="text-gray-600">This action cannot be undone.</p>
+            </div>
+        </div>
+        <p class="text-gray-700 mb-6">Are you sure you want to delete "<span id="postTitle" class="font-medium"></span>"?</p>
+        <div class="flex space-x-3">
+            <button onclick="hideDeleteModal()" class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                Cancel
+            </button>
+            <button onclick="confirmDelete()" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<!-- Alpine.js for interactive components -->
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+<script>
+    let currentPostSlug = '';
+
+    function showDeleteModal(title, slug) {
+        currentPostSlug = slug;
+        document.getElementById('postTitle').textContent = title;
+        document.getElementById('deleteModal').classList.remove('hidden');
+        document.getElementById('deleteModal').classList.add('flex');
+    }
+
+    function hideDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+        document.getElementById('deleteModal').classList.remove('flex');
+        currentPostSlug = '';
+    }
+
+    function confirmDelete() {
+        // For now, just show a coming soon message
+        hideDeleteModal();
+        
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        modal.innerHTML = `
+            <div class="bg-white rounded-xl p-8 max-w-md mx-4 shadow-2xl">
+                <div class="text-center">
+                    <div class="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-info-circle text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Coming Soon!</h3>
+                    <p class="text-gray-600 mb-6">Delete functionality is currently in development. This feature will be available in the next update.</p>
+                    <button onclick="this.closest('.fixed').remove()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        Got it
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // Remove modal when clicking outside
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+    }
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            hideDeleteModal();
+        }
+    });
+</script>
+{% endblock extra_js %}

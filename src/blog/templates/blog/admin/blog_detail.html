@@ -1,0 +1,405 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}{{ title }} - Blog Admin{% endblock %}
+
+{% block body %}
+<!-- Admin Header -->
+<header class="admin-header">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col">
+                <h1 class="h4 mb-0">Blog Admin Dashboard</h1>
+            </div>
+            <div class="col-auto">
+                <div class="dropdown">
+                    <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        {{ user.get_full_name|default:user.username }}
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'blog:admin_logout' %}">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 sidebar">
+            <div class="position-sticky">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'blog:admin_dashboard' %}">
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'blog:list' %}">
+                            All Posts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'blog:create' %}">
+                            Create New Post
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 main-content">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h2>{{ title }}</h2>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="{{ list_url }}" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Posts
+                        </a>
+                        <a href="{% url 'blog:update' slug=blog_post.slug %}" class="btn btn-sm btn-primary">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Blog Post Preview -->
+            <div class="row">
+                <div class="col-12">
+                    <!-- Post Meta Information -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Post Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <dl class="row">
+                                        <dt class="col-sm-4">Title:</dt>
+                                        <dd class="col-sm-8">{{ blog_post.title }}</dd>
+                                        
+                                        <dt class="col-sm-4">Slug:</dt>
+                                        <dd class="col-sm-8"><code>{{ blog_post.slug }}</code></dd>
+                                        
+                                        <dt class="col-sm-4">Status:</dt>
+                                        <dd class="col-sm-8">
+                                            <span class="badge {% if blog_post.status == 'published' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                                                {{ blog_post.get_status_display }}
+                                            </span>
+                                        </dd>
+                                        
+                                        <dt class="col-sm-4">Author:</dt>
+                                        <dd class="col-sm-8">{{ blog_post.author.get_full_name|default:blog_post.author.username }}</dd>
+                                    </dl>
+                                </div>
+                                <div class="col-md-6">
+                                    <dl class="row">
+                                        <dt class="col-sm-4">Created:</dt>
+                                        <dd class="col-sm-8">
+                                            {{ blog_post.created_at|date:"F d, Y" }} at {{ blog_post.created_at|time:"g:i A" }}
+                                        </dd>
+                                        
+                                        <dt class="col-sm-4">Updated:</dt>
+                                        <dd class="col-sm-8">
+                                            {{ blog_post.updated_at|date:"F d, Y" }} at {{ blog_post.updated_at|time:"g:i A" }}
+                                        </dd>
+                                        
+                                        {% if blog_post.excerpt %}
+                                        <dt class="col-sm-4">Excerpt:</dt>
+                                        <dd class="col-sm-8">{{ blog_post.excerpt|truncatewords:20 }}</dd>
+                                        {% endif %}
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Post Content Preview -->
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Content Preview</h5>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-primary active" id="preview-btn" onclick="showPreview()">
+                                    Preview
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" id="markdown-btn" onclick="showMarkdown()">
+                                    Markdown
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <!-- Rendered Content -->
+                            <div id="content-preview" class="blog-content">
+                                {{ rendered_content|safe }}
+                            </div>
+                            
+                            <!-- Raw Markdown -->
+                            <div id="content-markdown" style="display: none;">
+                                <pre class="bg-light p-3 rounded"><code>{{ blog_post.content }}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation Between Posts -->
+            {% if previous_post or next_post %}
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">Navigate Posts</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {% if previous_post %}
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <i class="bi bi-arrow-left-circle text-muted"></i>
+                                            </div>
+                                            <div>
+                                                <div class="small text-muted">Previous Post</div>
+                                                <a href="{% url 'blog:detail' slug=previous_post.slug %}" class="text-decoration-none">
+                                                    {{ previous_post.title|truncatechars:50 }}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="text-muted">
+                                            <i class="bi bi-arrow-left-circle"></i> No previous post
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 text-md-end">
+                                    {% if next_post %}
+                                        <div class="d-flex align-items-center justify-content-md-end">
+                                            <div class="me-3 order-md-2">
+                                                <i class="bi bi-arrow-right-circle text-muted"></i>
+                                            </div>
+                                            <div class="order-md-1">
+                                                <div class="small text-muted">Next Post</div>
+                                                <a href="{% url 'blog:detail' slug=next_post.slug %}" class="text-decoration-none">
+                                                    {{ next_post.title|truncatechars:50 }}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="text-muted">
+                                            No next post <i class="bi bi-arrow-right-circle"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Action Buttons -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ list_url }}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to All Posts
+                        </a>
+                        <div>
+                            <a href="#" class="btn btn-primary me-2" onclick="alert('Edit feature coming soon!')">
+                                <i class="bi bi-pencil"></i> Edit Post
+                            </a>
+                            <button type="button" class="btn btn-outline-danger" onclick="alert('Delete feature coming soon!')">
+                                <i class="bi bi-trash"></i> Delete Post
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .blog-content {
+        line-height: 1.6;
+        font-size: 1.1rem;
+    }
+    
+    .blog-content h1,
+    .blog-content h2,
+    .blog-content h3,
+    .blog-content h4,
+    .blog-content h5,
+    .blog-content h6 {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+    
+    .blog-content h1 {
+        font-size: 2.5rem;
+        border-bottom: 2px solid #dee2e6;
+        padding-bottom: 0.5rem;
+    }
+    
+    .blog-content h2 {
+        font-size: 2rem;
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 0.3rem;
+    }
+    
+    .blog-content h3 {
+        font-size: 1.5rem;
+    }
+    
+    .blog-content p {
+        margin-bottom: 1.5rem;
+    }
+    
+    .blog-content blockquote {
+        border-left: 4px solid #007bff;
+        padding-left: 1rem;
+        margin: 1.5rem 0;
+        color: #6c757d;
+        font-style: italic;
+    }
+    
+    .blog-content code {
+        background-color: #f8f9fa;
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.25rem;
+        font-size: 0.9em;
+        color: #e83e8c;
+    }
+    
+    .blog-content pre {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        overflow-x: auto;
+        margin: 1.5rem 0;
+    }
+    
+    .blog-content pre code {
+        background-color: transparent;
+        padding: 0;
+        color: inherit;
+    }
+    
+    .blog-content ul,
+    .blog-content ol {
+        margin-bottom: 1.5rem;
+        padding-left: 2rem;
+    }
+    
+    .blog-content li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .blog-content table {
+        width: 100%;
+        margin-bottom: 1.5rem;
+        border-collapse: collapse;
+    }
+    
+    .blog-content table th,
+    .blog-content table td {
+        padding: 0.75rem;
+        border: 1px solid #dee2e6;
+    }
+    
+    .blog-content table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+    }
+    
+    .blog-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 0.5rem;
+        margin: 1rem 0;
+    }
+    
+    .blog-content a {
+        color: #007bff;
+        text-decoration: none;
+    }
+    
+    .blog-content a:hover {
+        text-decoration: underline;
+    }
+    
+    .card-header .btn-group .btn {
+        border-radius: 0.25rem;
+    }
+    
+    .card-header .btn-group .btn.active {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: white;
+    }
+    
+    #content-markdown pre {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    .dl-horizontal dt {
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .dl-horizontal dd {
+        margin-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function showPreview() {
+        document.getElementById('content-preview').style.display = 'block';
+        document.getElementById('content-markdown').style.display = 'none';
+        
+        document.getElementById('preview-btn').classList.add('active');
+        document.getElementById('preview-btn').classList.remove('btn-outline-primary');
+        document.getElementById('preview-btn').classList.add('btn-primary');
+        
+        document.getElementById('markdown-btn').classList.remove('active');
+        document.getElementById('markdown-btn').classList.remove('btn-primary');
+        document.getElementById('markdown-btn').classList.add('btn-outline-secondary');
+    }
+    
+    function showMarkdown() {
+        document.getElementById('content-preview').style.display = 'none';
+        document.getElementById('content-markdown').style.display = 'block';
+        
+        document.getElementById('markdown-btn').classList.add('active');
+        document.getElementById('markdown-btn').classList.remove('btn-outline-secondary');
+        document.getElementById('markdown-btn').classList.add('btn-primary');
+        
+        document.getElementById('preview-btn').classList.remove('active');
+        document.getElementById('preview-btn').classList.remove('btn-primary');
+        document.getElementById('preview-btn').classList.add('btn-outline-primary');
+    }
+    
+    // Initialize with preview mode
+    document.addEventListener('DOMContentLoaded', function() {
+        showPreview();
+    });
+</script>
+{% endblock %}
