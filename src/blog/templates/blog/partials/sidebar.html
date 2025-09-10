@@ -1,0 +1,64 @@
+<!-- Responsive Sidebar Component -->
+<div 
+    id="mobile-sidebar"
+    class="w-64 bg-white shadow-sm min-h-screen fixed left-0 top-16 z-40 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto drawer-transition"
+    :class="{
+        'drawer-open': drawerOpen,
+        'drawer-closed': !drawerOpen
+    }"
+    x-show="drawerOpen || !isMobile"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="-translate-x-full"
+    x-transition:enter-end="translate-x-0"
+    x-transition:leave="transition ease-in duration-300"
+    x-transition:leave-start="translate-x-0"
+    x-transition:leave-end="-translate-x-full"
+>
+    <nav class="mt-8 px-4">
+        <ul class="space-y-2">
+            <li>
+                <a 
+                    href="{% url 'blog:admin_dashboard' %}" 
+                    class="{% if request.resolver_match.url_name == 'admin_dashboard' %}bg-blue-50 text-blue-700{% else %}text-gray-700 hover:bg-gray-50{% endif %} group flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors nav-link"
+                    @click="isMobile && closeDrawer()"
+                >
+                    <i class="fas fa-tachometer-alt mr-3 {% if request.resolver_match.url_name == 'admin_dashboard' %}text-blue-500{% else %}text-gray-400 group-hover:text-gray-500{% endif %}"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li>
+                <a 
+                    href="{% url 'blog:list' %}" 
+                    class="{% if request.resolver_match.url_name == 'list' %}bg-blue-50 text-blue-700{% else %}text-gray-700 hover:bg-gray-50{% endif %} group flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors nav-link"
+                    @click="isMobile && closeDrawer()"
+                >
+                    <i class="fas fa-list mr-3 {% if request.resolver_match.url_name == 'list' %}text-blue-500{% else %}text-gray-400 group-hover:text-gray-500{% endif %}"></i>
+                    All Posts
+                </a>
+            </li>
+            <li>
+                <a 
+                    href="{% url 'blog:create' %}" 
+                    class="{% if request.resolver_match.url_name == 'create' %}bg-blue-50 text-blue-700{% else %}text-gray-700 hover:bg-gray-50{% endif %} group flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors nav-link"
+                    @click="isMobile && closeDrawer()"
+                >
+                    <i class="fas fa-plus mr-3 {% if request.resolver_match.url_name == 'create' %}text-blue-500{% else %}text-gray-400 group-hover:text-gray-500{% endif %}"></i>
+                    Create New Post
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<!-- Mobile Overlay -->
+<div 
+    x-show="drawerOpen && isMobile"
+    x-transition:enter="transition-opacity ease-linear duration-300"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition-opacity ease-linear duration-300"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="fixed inset-0 drawer-overlay z-30 lg:hidden"
+    @click="closeDrawer()"
+></div>

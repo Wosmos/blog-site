@@ -39,9 +39,82 @@
         }
     </script>
     
+    <!-- Custom CSS for drawer animations -->
+    <style>
+        /* Drawer Animation Classes */
+        .drawer-transition {
+            transition: transform 300ms ease-in-out;
+            transform: translate3d(0, 0, 0); /* Hardware acceleration */
+        }
+        
+        .drawer-closed {
+            transform: translate3d(-100%, 0, 0);
+        }
+        
+        .drawer-open {
+            transform: translate3d(0, 0, 0);
+        }
+        
+        /* Desktop override */
+        @media (min-width: 1024px) {
+            .drawer-transition {
+                transform: translate3d(0, 0, 0) !important;
+            }
+        }
+        
+        /* Responsive breakpoint handling */
+        @media (max-width: 767px) {
+            .drawer-transition {
+                position: fixed;
+                top: 4rem; /* Account for navigation header */
+                left: 0;
+                height: calc(100vh - 4rem);
+                z-index: 40;
+            }
+        }
+        
+        /* Smooth transitions for responsive changes */
+        @media (prefers-reduced-motion: no-preference) {
+            .drawer-transition {
+                transition: transform 300ms ease-in-out, width 0ms, height 0ms;
+            }
+        }
+        
+        /* Respect user's motion preferences */
+        @media (prefers-reduced-motion: reduce) {
+            .drawer-transition {
+                transition: none;
+            }
+        }
+        
+        /* Overlay animation */
+        .drawer-overlay {
+            background: rgba(0, 0, 0, 0.5);
+            transition: opacity 300ms ease-in-out;
+        }
+        
+        /* Performance optimizations */
+        .drawer-transition {
+            will-change: transform;
+        }
+        
+        .drawer-overlay {
+            will-change: opacity;
+        }
+        
+        /* Navigation link transitions */
+        .nav-link {
+            transition: all 300ms ease-in-out;
+        }
+        
+        .nav-link:active {
+            transform: scale(0.98);
+        }
+    </style>
+    
     {% block extra_css %}{% endblock %}
 </head>
-<body class="h-full">
+<body class="h-full" x-data="drawerStore()">
     {% block body %}
     <!-- Messages -->
     {% if messages %}
@@ -72,6 +145,9 @@
     {% block content %}{% endblock %}
     {% endblock %}
     
+    <!-- Alpine.js for interactive components -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
     <!-- Flowbite JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
     
@@ -89,6 +165,158 @@
                 }, 5000);
             });
         });
+        
+        // Alpine.js drawer store
+        function drawerStore() {
+            return {
+                drawerOpen: false,
+                resizeTimeout: null,
+                lastFocusedElement: null,
+                
+                get isMobile() {
+                    return window.innerWidth < 768;
+                },
+                
+                toggleDrawer() {
+                    if (!this.drawerOpen) {
+                        this.openDrawer();
+                    } else {
+                        this.closeDrawer();
+                    }
+                },
+                
+                openDrawer() {
+                    // Store the currently focused element for restoration later
+                    this.lastFocusedElement = document.activeElement;
+                    this.drawerOpen = true;
+                    
+                    // Focus management for mobile drawer
+                    if (this.isMobile) {
+                        this.$nextTick(() => {
+                            this.focusFirstDrawerElement();
+                        });
+                    }
+                },
+                
+                closeDrawer() {
+                    this.drawerOpen = false;
+                    
+                    // Restore focus to the hamburger button when drawer closes
+                    if (this.isMobile && this.lastFocusedElement) {
+                        this.$nextTick(() => {
+                            this.lastFocusedElement.focus();
+                            this.lastFocusedElement = null;
+                        });
+                    }
+                },
+                
+                focusFirstDrawerElement() {
+                    // Focus the first navigation link in the drawer
+                    const firstNavLink = document.querySelector('#mobile-sidebar .nav-link');
+                    if (firstNavLink) {
+                        firstNavLink.focus();
+                    }
+                },
+                
+                handleKeydown(event) {
+                    // Handle Escape key to close drawer
+                    if (event.key === 'Escape' && this.drawerOpen && this.isMobile) {
+                        event.preventDefault();
+                        this.closeDrawer();
+                    }
+                    
+                    // Handle Tab key for focus trapping in mobile drawer
+                    if (event.key === 'Tab' && this.drawerOpen && this.isMobile) {
+                        this.handleTabKeyInDrawer(event);
+                    }
+                },
+                
+                handleTabKeyInDrawer(event) {
+                    const drawer = document.getElementById('mobile-sidebar');
+                    if (!drawer) return;
+                    
+                    const focusableElements = drawer.querySelectorAll(
+                        'a[href], button, [tabindex]:not([tabindex="-1"])'
+                    );
+                    
+                    if (focusableElements.length === 0) return;
+                    
+                    const firstElement = focusableElements[0];
+                    const lastElement = focusableElements[focusableElements.length - 1];
+                    
+                    // If Shift+Tab on first element, focus last element
+       
+                
+                closeDrawerWithDelay() {
+                    // Close drawer with a small delay for smooth navigation
+                    this.drawerOpen = false;
+                    return new Promise(resolve => setTimeout(resolve, 100));
+                },
+                
+                handleResize() {
+                    // Close drawer when switching from mobile to desktop
+                    if (!this.isMobile && this.drawerOpen) {
+                        this.drawerOpen = false;
+                    }
+                },
+                
+                debouncedResize() {
+                    // Clear existing timeout
+                    if (this.resizeTimeout) {
+                        clearTimeout(this.resizeTimeout);
+                    }
+                    
+                    // Set new timeout for debounced resize handling
+                    this.resizeTimeout = setTimeout(() => {
+                        this.handleResize();
+                    }, 150); // 150ms debounce delay for optimal performance
+                },
+                
+                handleOrientationChange() {
+                    // Handle device orientation changes
+                    setTimeout(() => {
+                        this.handleResize();
+                    }, 100); // Small delay to ensure viewport dimensions are updated
+                },
+                
+                resetDrawerState() {
+                    // Reset drawer state based on current viewport
+                    if (!this.isMobile) {
+                        this.drawerOpen = false;
+                    }
+                },
+                
+                init() {
+                    // Handle window resize with debouncing
+                    window.addEventListener('resize', () => {
+                        this.debouncedResize();
+                    });
+                    
+                    // Handle orientation change on mobile devices
+                    window.addEventListener('orientationchange', () => {
+                        this.handleOrientationChange();
+                    });
+                    
+                    // Close drawer on page navigation (beforeunload)
+                    window.addEventListener('beforeunload', () => {
+                        this.drawerOpen = false;
+                    });
+                    
+                    // Handle visibility change (when user switches tabs/apps)
+                    document.addEventListener('visibilitychange', () => {
+                        if (document.hidden && this.isMobile && this.drawerOpen) {
+                            this.drawerOpen = false;
+                        }
+                    });
+                    
+                    // Close drawer when page loads (ensures clean state)
+                    this.drawerOpen = false;
+                    
+                    // Initial resize check
+                    this.handleResize();
+                }
+            }
+        }
     </script>
     
     {% block extra_js %}{% endblock %}
