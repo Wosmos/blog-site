@@ -15,20 +15,80 @@ from .forms import BlogPostForm
 def home_page_view(request):
     """
     Home page view for the blog application.
+    Redirects to the public blog list.
     """
-    return HttpResponse("<h1>Welcome to the Blog Admin System</h1><p><a href='/admin/'>Go to Admin</a></p>")
+    return PublicBlogListView.as_view()(request)
+
+
+class PublicBlogListView(ListView):
+    """
+    Public view for listing published blog posts.
+    """
+    model = BlogPost
+    template_name = 'blog/public/blog_list.html'
+    context_object_name = 'blog_posts'
+    paginate_by = 9
+
+    def get_queryset(self):
+        return BlogPost.objects.filter(status='published').select_related('author').order_by('-created_at')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Our Published Blogs'
+        return context
+
+
+class PublicBlogDetailView(DetailView):
+    """
+    Public view for reading a published blog post.
+    """
+    model = BlogPost
+    template_name = 'blog/public/blog_detail.html'
+    context_object_name = 'blog_post'
+    slug_field = 'slug'
+    slug_url_kwarg = 'slug'
+
+    def get_queryset(self):
+        return BlogPost.objects.filter(status='published').select_related('author')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        blog_post = self.object
+        
+        # Render markdown content
+        md = markdown.Markdown(extensions=[
+            'markdown.extensions.extra',
+            'markdown.extensions.codehilite',
+            'markdown.extensions.toc',
+        ])
+        context['rendered_content'] = md.convert(blog_post.content)
+        context['title'] = blog_post.title
+        return context
 
 
 @admin_required
 def admin_dashboard(request):
     """
     Blog admin dashboard view.
-    Displays overview of blog management interface.
+    Displays overview of blog management interface with real stats.
     """
-    return render(request, 'blog/admin/dashboard.html', {
+    total_posts = BlogPost.objects.count()
+    published_posts = BlogPost.objects.filter(status='published').count()
+    draft_posts = BlogPost.objects.filter(status='draft').count()
+    last_post = BlogPost.objects.order_by('-updated_at').first()
+
+    context = {
         'title': 'Blog Admin Dashboard',
         'user': request.user,
-    })
+        'total_posts': total_posts,
+        'published_posts': published_posts,
+        'draft_posts': draft_posts,
+        'last_updated': last_post.updated_at if last_post else None,
+        # Placeholder until you track views explicitly
+        'total_views': 0,
+    }
+
+    return render(request, 'blog/admin/dashboard.html', context)
 
 
 class BlogListView(LoginRequiredMixin, ListView):

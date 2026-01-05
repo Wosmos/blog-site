@@ -112,25 +112,29 @@
                     <h3 class="text-lg font-semibold text-gray-900">Quick Overview</h3>
                     <div class="flex items-center text-sm text-gray-500">
                         <i class="fas fa-clock mr-1"></i>
-                        Last updated: just now
+                        {% if last_updated %}
+                            Last updated: {{ last_updated|date:"M d, Y H:i" }}
+                        {% else %}
+                            Last updated: No posts yet
+                        {% endif %}
                     </div>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div class="text-center p-4 bg-gray-50 rounded-lg">
-                        <div class="text-2xl font-bold text-gray-900 mb-1">0</div>
+                        <div class="text-2xl font-bold text-gray-900 mb-1">{{ total_posts }}</div>
                         <div class="text-sm text-gray-600">Total Posts</div>
                     </div>
                     <div class="text-center p-4 bg-gray-50 rounded-lg">
-                        <div class="text-2xl font-bold text-gray-900 mb-1">0</div>
+                        <div class="text-2xl font-bold text-gray-900 mb-1">{{ published_posts }}</div>
                         <div class="text-sm text-gray-600">Published</div>
                     </div>
                     <div class="text-center p-4 bg-gray-50 rounded-lg">
-                        <div class="text-2xl font-bold text-gray-900 mb-1">0</div>
+                        <div class="text-2xl font-bold text-gray-900 mb-1">{{ draft_posts }}</div>
                         <div class="text-sm text-gray-600">Drafts</div>
                     </div>
                     <div class="text-center p-4 bg-gray-50 rounded-lg">
-                        <div class="text-2xl font-bold text-gray-900 mb-1">0</div>
+                        <div class="text-2xl font-bold text-gray-900 mb-1">{{ total_views }}</div>
                         <div class="text-sm text-gray-600">Views</div>
                     </div>
                 </div>
