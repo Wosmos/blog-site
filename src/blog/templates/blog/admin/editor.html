@@ -1,0 +1,397 @@
+<style>
+    /* Editor Specific Overrides */
+    .editor-input { transition: all 0.2s ease-out; }
+    .editor-input:focus { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05); }
+    
+    /* Custom Scrollbar */
+    textarea::-webkit-scrollbar { width: 6px; }
+    textarea::-webkit-scrollbar-track { background: transparent; }
+    textarea::-webkit-scrollbar-thumb { background: #e7e5e4; border-radius: 3px; }
+    textarea::-webkit-scrollbar-thumb:hover { background: #d6d3d1; }
+
+    /* Preview Styles (Matching your Public Detail Page) */
+    .preview-body h1, .preview-body h2, .preview-body h3, .preview-body h4, .preview-body h5, .preview-body h6 { font-family: 'Playfair Display', serif; color: #1c1917; font-weight: 700; margin-top: 1.5em; margin-bottom: 0.5em; }
+    .preview-body h1 { font-size: 2.25rem; }
+    .preview-body h2 { font-size: 1.875rem; }
+    .preview-body h3 { font-size: 1.5rem; }
+    .preview-body h4 { font-size: 1.25rem; }
+    .preview-body p { margin-bottom: 1.2em; color: #44403c; line-height: 1.7; }
+    .preview-body a { color: #4f46e5; text-decoration: underline; font-weight: 500; }
+    .preview-body blockquote { border-left: 4px solid #4f46e5; padding: 0.5rem 0 0.5rem 1.5rem; font-style: italic; color: #57534e; background: #f5f5f4; margin: 1.5em 0; border-radius: 0 0.5rem 0.5rem 0; }
+    .preview-body pre { background: #1c1917; color: #f5f5f4; padding: 1.25rem; border-radius: 0.75rem; overflow-x: auto; font-size: 0.9em; margin: 1.5em 0; line-height: 1.5; }
+    .preview-body code { background: #f5f5f4; padding: 0.2em 0.4em; border-radius: 0.25rem; font-size: 0.9em; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; color: #dc2626; }
+    .preview-body pre code { background: transparent; padding: 0; color: inherit; font-size: inherit; }
+    .preview-body ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.2em; }
+    .preview-body ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1.2em; }
+    .preview-body li { margin-bottom: 0.5em; }
+    .preview-body img { border-radius: 0.75rem; max-width: 100%; height: auto; margin: 2em auto; border: 1px solid #e7e5e4; display: block; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+    .preview-body hr { border: 0; border-top: 2px solid #e7e5e4; margin: 2.5em 0; }
+</style>
+
+<div class="min-h-screen bg-[#FDFDFC] font-sans text-stone-900" x-data="blogEditor()">
+    
+    <!-- Centralized Header -->
+    {% include "blog/partials/header.html" %}
+
+    <!-- Editor Specific Toolbar/State Bar -->
+    <div class="bg-white border-b border-stone-200 px-4 sm:px-6 lg:px-8 py-3 sticky top-16 z-30">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="{% url 'blog:list' %}" class="text-stone-400 hover:text-stone-900 transition-colors" title="Back to List">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div class="h-4 w-px bg-stone-200 mx-2"></div>
+                
+                <div class="flex flex-col">
+                    <span class="font-bold text-stone-900 leading-none">
+                        {% if blog_post %}Editing Story{% else %}New Story{% endif %}
+                    </span>
+                    {% if blog_post %}
+                    <span class="text-[10px] text-stone-400 font-mono mt-1">Last saved: {{ blog_post.updated_at|time:"H:i" }}</span>
+                    {% endif %}
+                </div>
+
+                <span x-show="isDirty" class="ml-2 text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100 font-medium {% if blog_post %}animate-pulse{% endif %}">Unsaved changes</span>
+                <span x-show="autoSaved" class="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full border border-green-100 font-medium" style="display: none;" x-transition>Saved to draft</span>
+            </div>
+
+            <div class="flex items-center gap-3">
+                {% if blog_post %}
+                    {% if blog_post.status == 'published' %}
+                    <a href="{% url 'public_detail' slug=blog_post.slug %}" target="_blank" class="hidden sm:inline-flex items-center px-4 py-2 text-sm font-bold text-stone-500 hover:text-indigo-600 transition-colors">
+                        <i class="fas fa-external-link-alt mr-2 text-xs"></i> View Live
+                    </a>
+                    {% else %}
+                    <a href="{% url 'blog:detail' slug=blog_post.slug %}" target="_blank" class="hidden sm:inline-flex items-center px-4 py-2 text-sm font-bold text-stone-400 hover:text-stone-900 transition-colors">
+                        <i class="fas fa-eye mr-2 text-xs"></i> Preview
+                    </a>
+                    {% endif %}
+                {% endif %}
+                <button @click="submitForm()" class="inline-flex items-center px-6 py-2 bg-stone-900 hover:bg-stone-800 text-white text-sm font-bold rounded-full shadow-lg transition-all hover:-translate-y-0.5">
+                    <span>{{ submit_text|default:"Publish" }}</span>
+                    <i class="fas {% if blog_post %}fa-save{% else %}fa-paper-plane{% endif %} ml-2 text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Editor Layout -->
+    <form method="post" novalidate id="postForm" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% csrf_token %}
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- LEFT COLUMN: Editor -->
+            <div class="lg:col-span-8 space-y-6">
+                
+                <!-- Title Input -->
+                <div class="group">
+                    <input 
+                        type="text" 
+                        id="{{ form.title.id_for_label }}" 
+                        name="{{ form.title.name }}"
+                        x-model="title"
+                        @input="handleTitleInput()"
+                        class="w-full bg-transparent border-0 border-b border-transparent focus:border-stone-200 focus:ring-0 px-0 py-4 text-4xl md:text-5xl font-serif font-bold text-stone-900 placeholder-stone-300 transition-colors"
+                        placeholder="Title..."
+                        required
+                        autocomplete="off"
+                    >
+                    {% if form.title.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ form.title.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Editor Card -->
+                <div class="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden flex flex-col min-h-[600px]">
+                    
+                    <!-- Toolbar -->
+                    <div class="bg-stone-50 border-b border-stone-200 px-4 py-2 flex flex-wrap items-center gap-1 sticky top-0 z-10">
+                        <!-- Mode Switcher -->
+                        <div class="flex bg-white rounded-lg border border-stone-200 p-0.5 mr-4">
+                            <button type="button" @click="editorMode = 'write'" :class="editorMode === 'write' ? 'bg-stone-100 text-stone-900 font-bold shadow-sm' : 'text-stone-500 hover:text-stone-700'" class="px-3 py-1.5 text-xs rounded-md transition-all">Write</button>
+                            <button type="button" @click="editorMode = 'preview'" :class="editorMode === 'preview' ? 'bg-stone-100 text-stone-900 font-bold shadow-sm' : 'text-stone-500 hover:text-stone-700'" class="px-3 py-1.5 text-xs rounded-md transition-all">Preview</button>
+                        </div>
+
+                        <div class="h-4 w-px bg-stone-300 mx-2"></div>
+
+                        <!-- Formatting Buttons -->
+                        <div class="flex gap-1" x-show="editorMode === 'write'">
+                            <button type="button" @click="insertMarkdown('**', '**')" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Bold"><i class="fas fa-bold text-xs"></i></button>
+                            <button type="button" @click="insertMarkdown('*', '*')" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Italic"><i class="fas fa-italic text-xs"></i></button>
+                            
+                            <!-- Headings Dropdown -->
+                            <div class="relative" x-data="{ open: false }" @click.away="open = false">
+                                <button type="button" @click="open = !open" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Headings">
+                                    <i class="fas fa-heading text-xs"></i>
+                                </button>
+                                <div x-show="open" class="absolute left-0 mt-1 w-32 bg-white border border-stone-200 rounded-lg shadow-xl z-50 py-1" style="display: none;">
+                                    <button type="button" @click="insertMarkdown('# ', ''); open = false" class="w-full text-left px-3 py-1.5 text-xs hover:bg-stone-50 font-bold text-stone-700 border-l-2 border-transparent hover:border-stone-900 transition-all">Heading 1</button>
+                                    <button type="button" @click="insertMarkdown('## ', ''); open = false" class="w-full text-left px-3 py-1.5 text-xs hover:bg-stone-50 font-bold text-stone-700 border-l-2 border-transparent hover:border-stone-900 transition-all">Heading 2</button>
+                                    <button type="button" @click="insertMarkdown('### ', ''); open = false" class="w-full text-left px-3 py-1.5 text-xs hover:bg-stone-50 font-bold text-stone-700 border-l-2 border-transparent hover:border-stone-900 transition-all">Heading 3</button>
+                                    <button type="button" @click="insertMarkdown('#### ', ''); open = false" class="w-full text-left px-3 py-1.5 text-xs hover:bg-stone-50 font-bold text-stone-700 border-l-2 border-transparent hover:border-stone-900 transition-all">Heading 4</button>
+                                </div>
+                            </div>
+
+                            <button type="button" @click="insertMarkdown('> ', '')" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Quote"><i class="fas fa-quote-right text-xs"></i></button>
+                            <div class="h-4 w-px bg-stone-300 mx-1 self-center"></div>
+                            <button type="button" @click="promptLink()" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Link"><i class="fas fa-link text-xs"></i></button>
+                            <button type="button" @click="promptImage()" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Image"><i class="fas fa-image text-xs"></i></button>
+                            <button type="button" @click="insertMarkdown('```\n', '\n```')" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Code Block"><i class="fas fa-code text-xs"></i></button>
+                            <button type="button" @click="insertMarkdown('`', '`')" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Inline Code"><i class="fas fa-terminal text-xs"></i></button>
+                            <div class="h-4 w-px bg-stone-300 mx-1 self-center"></div>
+                            <button type="button" @click="insertMarkdown('- ', '')" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Bullet List"><i class="fas fa-list-ul text-xs"></i></button>
+                            <button type="button" @click="insertMarkdown('1. ', '')" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Numbered List"><i class="fas fa-list-ol text-xs"></i></button>
+                            <button type="button" @click="insertMarkdown('\n---\n', '')" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Horizontal Rule"><i class="fas fa-minus text-xs"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- WRITE MODE -->
+                    <div x-show="editorMode === 'write'" class="flex-1 relative group">
+                        <textarea 
+                            id="{{ form.content.id_for_label }}" 
+                            name="{{ form.content.name }}"
+                            x-model="content"
+                            x-ref="contentTextarea"
+                            @input="markDirty()"
+                            class="w-full h-full p-6 sm:p-8 border-0 focus:ring-0 resize-none font-mono text-sm leading-relaxed text-stone-800 bg-white"
+                            placeholder="Tell your story..."
+                            required
+                        ></textarea>
+                        
+                        <!-- Helper Text -->
+                        <div class="absolute bottom-4 right-4 text-xs text-stone-300 pointer-events-none group-focus-within:text-stone-400 transition-colors">
+                            Markdown Supported
+                        </div>
+                    </div>
+
+                    <!-- PREVIEW MODE -->
+                    <div x-show="editorMode === 'preview'" class="flex-1 p-8 sm:p-10 bg-[#FAFAF9] overflow-y-auto">
+                        <div class="max-w-none preview-body">
+                            <div x-html="renderMarkdown(content)"></div>
+                            <div x-show="!content.trim()" class="flex flex-col items-center justify-center h-48 text-stone-400">
+                                <i class="fas fa-pencil-alt mb-2 text-2xl opacity-20"></i>
+                                <p class="text-sm">Start writing to see the preview.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if form.content.errors %}
+                    <p class="text-red-500 text-sm px-1">{{ form.content.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- RIGHT COLUMN: Settings -->
+            <div class="lg:col-span-4 space-y-6">
+                
+                <!-- Info Card -->
+                <div class="bg-indigo-50 rounded-xl border border-indigo-100 p-4 flex items-start gap-3">
+                    <i class="fas fa-history text-indigo-500 mt-1"></i>
+                    <div>
+                        <h4 class="text-sm font-bold text-indigo-900">
+                            {% if blog_post %}Edit Mode{% else %}New Post{% endif %}
+                        </h4>
+                        <p class="text-xs text-indigo-700 leading-relaxed mt-1">
+                            {% if blog_post %}
+                            You are updating an existing post. Changes won't go live until you click Update.
+                            {% else %}
+                            Start drafting your new story. You can save it as a draft or publish it immediately.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Publish Settings -->
+                <div class="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
+                    <h3 class="text-sm font-bold text-stone-900 uppercase tracking-wider mb-4 border-b border-stone-100 pb-2">Settings</h3>
+                    
+                    <div class="mb-5">
+                        <label for="{{ form.status.id_for_label }}" class="block text-xs font-bold text-stone-500 mb-2">Status</label>
+                        <div class="relative">
+                            <select 
+                                id="{{ form.status.id_for_label }}" 
+                                name="{{ form.status.name }}"
+                                @change="markDirty()"
+                                class="w-full pl-3 pr-10 py-2.5 bg-stone-50 border border-stone-200 rounded-lg text-sm font-medium text-stone-900 focus:ring-2 focus:ring-stone-900 focus:border-stone-900 transition-shadow appearance-none cursor-pointer"
+                            >
+                                <option value="draft" {% if form.status.value == 'draft' %}selected{% endif %}>Draft</option>
+                                <option value="published" {% if form.status.value == 'published' %}selected{% endif %}>Published</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-stone-500">
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-1">
+                        <label class="block text-xs font-bold text-stone-500 mb-2">Permalink (Slug)</label>
+                        <div class="flex items-center text-xs text-stone-400 bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 overflow-hidden">
+                            <span class="flex-shrink-0">/posts/</span>
+                            <span x-text="slug" class="font-mono text-stone-800 ml-0.5 truncate"></span>
+                        </div>
+                        <p class="text-[10px] text-stone-400 mt-1.5">Slugs are auto-generated from title.</p>
+                    </div>
+                </div>
+
+                <!-- Excerpt Card -->
+                <div class="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-4 border-b border-stone-100 pb-2">
+                        <h3 class="text-sm font-bold text-stone-900 uppercase tracking-wider">Excerpt</h3>
+                        <span class="text-[10px] font-mono text-stone-400" :class="excerpt.length > 500 ? 'text-red-500' : ''">
+                            <span x-text="excerpt.length"></span>/500
+                        </span>
+                    </div>
+                    
+                    <textarea 
+                        id="{{ form.excerpt.id_for_label }}" 
+                        name="{{ form.excerpt.name }}"
+                        x-model="excerpt"
+                        @input="markDirty()"
+                        rows="4"
+                        class="w-full p-3 bg-stone-50 border border-stone-200 rounded-lg text-sm text-stone-800 focus:ring-2 focus:ring-stone-900 focus:border-stone-900 focus:bg-white transition-all resize-none"
+                        placeholder="Write a short summary..."
+                        maxlength="500"
+                    ></textarea>
+                </div>
+
+                <!-- Tips Card -->
+                <div class="bg-gradient-to-br from-stone-50 to-indigo-50/30 rounded-xl border border-stone-100 p-5">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-magic text-indigo-400 mt-0.5"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h4 class="text-sm font-bold text-stone-900">Markdown Magic</h4>
+                            <p class="text-[11px] text-stone-500 mt-1 leading-relaxed">
+                                Use `#` for headers, `**` for bold, and `[link](url)` for connections. Your changes are automatically saved as a draft in your browser.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Alpine.js & Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+<script>
+    function blogEditor() {
+        return {
+            title: '{{ form.title.value|default:""|escapejs }}',
+            slug: '{{ form.instance.slug|default:""|escapejs }}',
+            excerpt: '{{ form.excerpt.value|default:""|escapejs }}',
+            content: `{{ form.content.value|default:""|escapejs }}`,
+            editorMode: 'write',
+            isDirty: false,
+            autoSaved: false,
+            saveTimeout: null,
+
+            init() {
+                if (!this.slug && this.title) {
+                    this.generateSlug();
+                }
+                this.$watch('title', () => this.handleTitleInput());
+            },
+            
+            handleTitleInput() {
+                this.generateSlug();
+                this.markDirty();
+            },
+
+            generateSlug() {
+                this.slug = this.title
+                    .toLowerCase()
+                    .replace(/[^a-z0-9\s-]/g, '')
+                    .replace(/\s+/g, '-')
+                    .replace(/-+/g, '-')
+                    .trim('-');
+            },
+
+            markDirty() {
+                this.isDirty = true;
+                this.triggerAutoSave();
+            },
+
+            triggerAutoSave() {
+                clearTimeout(this.saveTimeout);
+                this.saveTimeout = setTimeout(() => {
+                    const data = {
+                        title: this.title,
+                        content: this.content,
+                        excerpt: this.excerpt,
+                        timestamp: new Date().getTime()
+                    };
+                    localStorage.setItem('blog_draft_autosave', JSON.stringify(data));
+                    this.autoSaved = true;
+                    setTimeout(() => this.autoSaved = false, 2000);
+                }, 3000);
+            },
+            
+            insertMarkdown(before, after) {
+                const textarea = this.$refs.contentTextarea;
+                if (!textarea) return;
+
+                const start = textarea.selectionStart;
+                const end = textarea.selectionEnd;
+                const text = textarea.value;
+                const selectedText = text.substring(start, end);
+                
+                const insertion = selectedText ? (before + selectedText + after) : before;
+                const beforeText = textarea.value.substring(0, start);
+                const afterText = textarea.value.substring(end);
+                
+                this.content = beforeText + insertion + afterText;
+                this.markDirty();
+                
+                this.$nextTick(() => {
+                    const newCursorPos = selectedText 
+                        ? start + insertion.length 
+                        : start + before.length;
+                    textarea.focus();
+                    textarea.setSelectionRange(newCursorPos, newCursorPos);
+                });
+            },
+            
+            renderMarkdown(text) {
+                if (!text) return '';
+                try {
+                    marked.setOptions({
+                        breaks: true,
+                        gfm: true,
+                        headerIds: true,
+                        mangle: false
+                    });
+                    const rawHtml = marked.parse(text);
+                    return DOMPurify.sanitize(rawHtml);
+                } catch (e) {
+                    console.error("Markdown Error:", e);
+                    return text;
+                }
+            },
+
+            promptLink() {
+                const url = prompt("Enter Link URL:");
+                if (url) {
+                    this.insertMarkdown('[', `](${url})`);
+                }
+            },
+
+            promptImage() {
+                const url = prompt("Enter Image URL:");
+                if (url) {
+                    const alt = prompt("Enter Image Alt Text:", "image description");
+                    this.insertMarkdown(`![${alt}](`, `${url})`);
+                }
+            },
+
+            submitForm() {
+                localStorage.removeItem('blog_draft_autosave');
+                document.getElementById('postForm').submit();
+            }
+        }
+    }
+</script>

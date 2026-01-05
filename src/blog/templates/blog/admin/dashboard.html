@@ -1,189 +1,164 @@
 {% extends "blog/base.html" %}
 
-{% block title %}{{ title }} - Blog Admin{% endblock title %}
+{% block title %}{{ title }} — Nexus Dashboard{% endblock title %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <!-- Logo and Brand -->
-                <div class="flex items-center">
-                    <!-- Hamburger Menu Button -->
-                    {% include "blog/partials/hamburger_button.html" %}
-                    
-                    <div class="flex-shrink-0 flex items-center ml-2 lg:ml-0">
-                        <div class="h-8 w-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                            <i class="fas fa-blog text-white text-sm"></i>
-                        </div>
-                        <h1 class="text-xl font-bold text-gray-900">Blog Admin</h1>
-                    </div>
-                </div>
-
-                <!-- User Menu -->
-                <div class="flex items-center">
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            <div class="h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-2">
-                                <span class="text-white text-sm font-medium">{{ user.username|first|upper }}</span>
-                            </div>
-                            <span class="text-gray-700 font-medium">{{ user.get_full_name|default:user.username }}</span>
-                            <i class="fas fa-chevron-down ml-2 text-gray-400 text-xs"></i>
-                        </button>
-                        
-                        <div x-show="open" @click.away="open = false" x-transition class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                            <div class="py-1">
-                                <a href="{% url 'blog:admin_logout' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                    <i class="fas fa-sign-out-alt mr-2 text-gray-400"></i>
-                                    Sign Out
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
+<div class="min-h-screen">
+    {% include "blog/partials/header.html" with use_sidebar=True %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <div class="flex">
-        <!-- Responsive Sidebar -->
         {% include "blog/partials/sidebar.html" %}
 
-        <!-- Main Content -->
-        <div class="flex-1 p-8 lg:ml-0">
-            <!-- Welcome Header -->
-            <div class="mb-8">
-                <h2 class="text-3xl font-bold text-gray-900 mb-2">Welcome back, {{ user.get_full_name|default:user.username }}!</h2>
-                <p class="text-gray-600">Here's what's happening with your blog today.</p>
-            </div>
-
-            <!-- Quick Actions Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                <!-- Manage Posts Card -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                    <div class="flex items-center mb-4">
-                        <div class="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-list text-blue-600 text-xl"></i>
-                        </div>
-                        <h3 class="ml-4 text-lg font-semibold text-gray-900">Blog Posts</h3>
-                    </div>
-                    <p class="text-gray-600 mb-4">Manage your blog posts, edit existing content, and organize your articles.</p>
-                    <a href="{% url 'blog:list' %}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
-                        <i class="fas fa-arrow-right mr-2"></i>
-                        Manage Posts
-                    </a>
-                </div>
-
-                <!-- Create New Post Card -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                    <div class="flex items-center mb-4">
-                        <div class="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-plus text-green-600 text-xl"></i>
-                        </div>
-                        <h3 class="ml-4 text-lg font-semibold text-gray-900">Create New Post</h3>
-                    </div>
-                    <p class="text-gray-600 mb-4">Start writing a new blog post with our powerful markdown editor.</p>
-                    <a href="{% url 'blog:create' %}" class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors">
-                        <i class="fas fa-pen mr-2"></i>
-                        New Post
-                    </a>
-                </div>
-
-                <!-- Settings Card -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                    <div class="flex items-center mb-4">
-                        <div class="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-cog text-purple-600 text-xl"></i>
-                        </div>
-                        <h3 class="ml-4 text-lg font-semibold text-gray-900">Settings</h3>
-                    </div>
-                    <p class="text-gray-600 mb-4">Configure your blog settings, preferences, and account details.</p>
-                    <button onclick="showComingSoon()" class="inline-flex items-center px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors">
-                        <i class="fas fa-tools mr-2"></i>
-                        Settings
-                    </button>
-                </div>
-            </div>
-
-            <!-- Stats Overview -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-lg font-semibold text-gray-900">Quick Overview</h3>
-                    <div class="flex items-center text-sm text-gray-500">
-                        <i class="fas fa-clock mr-1"></i>
-                        {% if last_updated %}
-                            Last updated: {{ last_updated|date:"M d, Y H:i" }}
-                        {% else %}
-                            Last updated: No posts yet
-                        {% endif %}
-                    </div>
+        <main class="flex-1 p-6 lg:p-12 max-w-[1400px] mx-auto">
+            
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+                <div class="space-y-2">
+                    <p class="text-[11px] font-black text-indigo-600 uppercase tracking-[0.3em]">Admin Dashboard</p>
+                    <h2 class="text-5xl font-black text-slate-900 tracking-tighter">
+                        Hello, <span class="text-slate-400 italic font-medium">{{ user.username|title }}</span>.
+                    </h2>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="text-center p-4 bg-gray-50 rounded-lg">
-                        <div class="text-2xl font-bold text-gray-900 mb-1">{{ total_posts }}</div>
-                        <div class="text-sm text-gray-600">Total Posts</div>
+                <div class="max-w-md bg-white border-l-4 border-indigo-500 p-6 rounded-r-2xl shadow-sm">
+                    <p class="text-slate-600 italic text-sm font-medium leading-relaxed">
+                        "The secret of change is to focus all of your energy, not on fighting the old, but on building the new."
+                    </p>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-3">— Socrates</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div class="bg-white border border-slate-100 p-8 rounded-2xl shadow-sm hover:shadow-md transition-all group">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Stories</span>
+                        <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-indigo-500 group-hover:text-white transition-colors">
+                            <i class="fas fa-book-open text-xs"></i>
+                        </div>
                     </div>
-                    <div class="text-center p-4 bg-gray-50 rounded-lg">
-                        <div class="text-2xl font-bold text-gray-900 mb-1">{{ published_posts }}</div>
-                        <div class="text-sm text-gray-600">Published</div>
+                    <div class="text-4xl font-black text-slate-900 tracking-tighter">{{ total_posts }}</div>
+                    <p class="text-[10px] text-slate-400 font-bold mt-2 uppercase">Life-to-date</p>
+                </div>
+
+                <div class="bg-white border border-slate-100 p-8 rounded-2xl shadow-sm hover:shadow-md transition-all group">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Live Now</span>
+                        <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-green-500 group-hover:text-white transition-colors">
+                            <i class="fas fa-check-circle text-xs"></i>
+                        </div>
                     </div>
-                    <div class="text-center p-4 bg-gray-50 rounded-lg">
-                        <div class="text-2xl font-bold text-gray-900 mb-1">{{ draft_posts }}</div>
-                        <div class="text-sm text-gray-600">Drafts</div>
+                    <div class="text-4xl font-black text-slate-900 tracking-tighter">{{ published_posts }}</div>
+                    <p class="text-[10px] text-green-500 font-bold mt-2 uppercase">Currently Public</p>
+                </div>
+
+                <div class="bg-white border border-slate-100 p-8 rounded-2xl shadow-sm hover:shadow-md transition-all group">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">In Progress</span>
+                        <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors">
+                            <i class="fas fa-pen-fancy text-xs"></i>
+                        </div>
                     </div>
-                    <div class="text-center p-4 bg-gray-50 rounded-lg">
-                        <div class="text-2xl font-bold text-gray-900 mb-1">{{ total_views }}</div>
-                        <div class="text-sm text-gray-600">Views</div>
+                    <div class="text-4xl font-black text-slate-900 tracking-tighter">{{ draft_posts }}</div>
+                    <p class="text-[10px] text-amber-500 font-bold mt-2 uppercase">Needs attention</p>
+                </div>
+
+                <div class="bg-slate-900 p-8 rounded-2xl shadow-xl shadow-slate-200 group">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Reach</span>
+                        <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white">
+                            <i class="fas fa-chart-line text-xs"></i>
+                        </div>
+                    </div>
+                    <div class="text-4xl font-black text-white tracking-tighter">{{ total_views }}</div>
+                    <p class="text-[10px] text-indigo-400 font-bold mt-2 uppercase">Total Readers</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 bg-white border border-slate-100 p-10 rounded-xl shadow-sm">
+                    <div class="flex items-center justify-between mb-10">
+                        <div>
+                            <h3 class="text-lg font-black text-slate-900 uppercase tracking-tight">Growth Velocity</h3>
+                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-widest">Views over the last 7 days</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-[10px] font-black rounded-full border border-indigo-100">Live Trend</span>
+                        </div>
+                    </div>
+                    <div class="h-[300px]">
+                        <canvas id="mainTrendChart"></canvas>
                     </div>
                 </div>
 
-                <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                    <div class="flex items-center">
-                        <i class="fas fa-info-circle text-blue-600 mr-2"></i>
-                        <span class="text-blue-800 text-sm">
-                            Blog statistics and analytics will be displayed here once you start creating posts.
-                        </span>
+                <div class="space-y-6">
+                    <div class="bg-white border border-slate-100 p-8 rounded-2xl shadow-sm">
+                        <h4 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Monthly Goal</h4>
+                        <div class="flex items-end justify-between mb-2">
+                            <span class="text-2xl font-black text-slate-900">85%</span>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase">12 / 15 Posts</span>
+                        </div>
+                        <div class="h-2 w-full bg-slate-50 rounded-full overflow-hidden">
+                            <div class="h-full bg-indigo-600 rounded-full" style="width: 85%"></div>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-4 leading-relaxed font-medium">
+                            You are <span class="text-slate-900 font-bold">3 posts away</span> from your monthly milestone. Keep the momentum!
+                        </p>
                     </div>
+
+                    <a href="{% url 'blog:create' %}" class="flex items-center justify-between w-full px-6 py-4 bg-indigo-600 rounded-2xl text-white group hover:bg-slate-900 transition-all duration-500 shadow-lg shadow-indigo-100">
+                        <span class="text-xl font-black tracking-tight italic">Write New Story</span>
+                        <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center group-hover:rotate-90 transition-transform">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                    </a>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
 </div>
-{% endblock content %}
-
-{% block extra_js %}
-<!-- Alpine.js for interactive components -->
-<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
 <script>
-    function showComingSoon() {
-        // Create a beautiful modal instead of alert
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-        modal.innerHTML = `
-            <div class="bg-white rounded-xl p-8 max-w-md mx-4 shadow-2xl">
-                <div class="text-center">
-                    <div class="h-16 w-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-rocket text-purple-600 text-2xl"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Coming Soon!</h3>
-                    <p class="text-gray-600 mb-6">Settings and advanced features are currently in development. Stay tuned for updates!</p>
-                    <button onclick="this.closest('.fixed').remove()" class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-                        Got it
-                    </button>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-        
-        // Remove modal when clicking outside
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                modal.remove();
+document.addEventListener('DOMContentLoaded', () => {
+    const ctx = document.getElementById('mainTrendChart').getContext('2d');
+    
+    // Create a smooth gradient for the area chart
+    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(79, 70, 229, 0.1)');
+    gradient.addColorStop(1, 'rgba(79, 70, 229, 0)');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                data: [3200, 4100, 3800, 5200, 6100, 5800, 7200],
+                borderColor: '#4f46e5',
+                borderWidth: 4,
+                tension: 0.4,
+                pointRadius: 0,
+                pointHoverRadius: 6,
+                pointBackgroundColor: '#4f46e5',
+                fill: true,
+                backgroundColor: gradient
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { 
+                    beginAtZero: true,
+                    grid: { color: '#f1f5f9', borderDash: [5, 5] },
+                    ticks: { color: '#94a3b8', font: { weight: '600' } }
+                },
+                x: { 
+                    grid: { display: false },
+                    ticks: { color: '#94a3b8', font: { weight: '600' } }
+                }
             }
-        });
-    }
+        }
+    });
+});
 </script>
-{% endblock extra_js %}
+{% endblock content %}

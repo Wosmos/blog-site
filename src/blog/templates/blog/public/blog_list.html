@@ -1,111 +1,274 @@
 {% extends "blog/base.html" %}
 
-{% block title %}{{ title }} | Blog{% endblock %}
+{% block title %}{{ title }} | The Wlog{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-50">
-    <!-- Hero Section -->
-    <header class="bg-white border-b border-gray-200">
-        <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight sm:text-5xl md:text-6xl">
-                <span class="block">Welcome to Our</span>
-                <span class="block text-primary-600">Thought Leadership</span>
-            </h1>
-            <p class="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-                Explore the latest insights, tutorials, and stories from our expert writers.
-            </p>
-            {% if not user.is_authenticated %}
-            <div class="mt-8 flex justify-center">
-                <a href="{% url 'blog:admin_login' %}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 shadow-sm transition duration-150 ease-in-out">
-                    Admin Login
+<style>
+    /* 1. The Crisp Grid Background */
+    .bg-grid-pattern {
+        background-image: linear-gradient(to right, #e7e5e4 1px, transparent 1px),
+                          linear-gradient(to bottom, #e7e5e4 1px, transparent 1px);
+        background-size: 40px 40px;
+        mask-image: linear-gradient(to bottom, transparent 5%, black 40%, black 80%, transparent 95%);
+        -webkit-mask-image: linear-gradient(to bottom, transparent 5%, black 40%, black 80%, transparent 95%);
+    }
+
+    /* 2. Shine Animation for Buttons */
+    @keyframes shine-slide {
+        0% { left: -100%; opacity: 0; }
+        50% { opacity: 0.5; }
+        100% { left: 200%; opacity: 0; }
+    }
+    .btn-shine-effect { position: relative; overflow: hidden; }
+    .btn-shine-effect::after {
+        content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+        background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
+        transform: skewX(-25deg); pointer-events: none;
+    }
+    .btn-shine-effect:hover::after { animation: shine-slide 0.75s ease-in-out; }
+
+    /* 3. Card Patterns (CSS Only Images) */
+    .pattern-architect {
+        background-color: #fafaf9;
+        background-image: radial-gradient(#d6d3d1 1px, transparent 1px);
+        background-size: 10px 10px;
+    }
+    .pattern-lines {
+        background-color: #fafaf9;
+        background-image: repeating-linear-gradient(45deg, #e7e5e4 0, #e7e5e4 1px, transparent 0, transparent 50%);
+        background-size: 10px 10px;
+    }
+</style>
+
+<div class="min-h-screen bg-[#FDFDFC] relative overflow-hidden font-sans text-stone-900 selection:bg-stone-900 selection:text-white">
+
+    <!-- BACKGROUND LAYERS -->
+    <div class="absolute inset-0 bg-grid-pattern opacity-[0.3] z-0 pointer-events-none"></div>
+    
+    <!-- Giant Watermark -->
+    <div class="absolute top-0 right-0 z-0 pointer-events-none opacity-[0.03] transform translate-x-1/4 -translate-y-1/4">
+        <i class="fas fa-feather-alt text-[40rem]"></i>
+    </div>
+
+    <!-- Navbar -->
+    <header class="sticky top-0 z-50 bg-[#FDFDFC]/80 backdrop-blur-md border-b border-stone-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Brand -->
+            <a href="{% url 'home' %}" class="flex items-center gap-3 group">
+                <div class="h-9 w-9 bg-stone-900 text-white flex items-center justify-center rounded-xl shadow-lg shadow-stone-900/20 group-hover:rotate-12 transition-transform duration-300">
+                    <span class="font-serif font-bold text-lg italic">W</span>
+                </div>
+                <h1 class="text-xl font-bold tracking-tight text-stone-900 group-hover:text-stone-600 transition-colors">
+                    Wlog<span class="text-stone-300">.</span>
+                </h1>
+            </a>
+            
+            <!-- Actions -->
+            <div class="flex items-center gap-4">
+                {% if not user.is_authenticated %}
+                <a href="{% url 'blog:admin_login' %}" class="text-sm font-bold text-stone-500 hover:text-stone-900 uppercase tracking-wide">
+                    Login
                 </a>
-            </div>
-            {% else %}
-            <div class="mt-8 flex justify-center">
-                <a href="{% url 'blog:admin_dashboard' %}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition duration-150 ease-in-out">
-                    Back to Dashboard
+                <a href="{% url 'blog:admin_login' %}" class="btn-shine-effect hidden sm:inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold text-white bg-stone-900 rounded-full hover:bg-stone-800 shadow-md hover:shadow-md transition-all hover:-translate-y-0.5">
+                    Subscribe
                 </a>
+                {% else %}
+                <a href="{% url 'blog:admin_dashboard' %}" class="btn-shine-effect inline-flex items-center justify-center px-5 py-2.5 text-sm font-bold text-white bg-stone-900 rounded-full hover:bg-stone-800 shadow-md hover:shadow-md transition-all hover:-translate-y-0.5">
+                    Admin Dashboard
+                </a>
+                {% endif %}
             </div>
-            {% endif %}
         </div>
     </header>
 
-    <!-- Blog Posts Grid -->
-    <main class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 gap-12 lg:grid-cols-3 md:grid-cols-2">
-            {% for post in blog_posts %}
-            <article class="flex flex-col overflow-hidden rounded-2xl shadow-lg bg-white hover:shadow-2xl transition-shadow duration-300">
-                <div class="flex-1 p-6 flex flex-col justify-between">
-                    <div class="flex-1">
-                        <p class="text-sm font-medium text-primary-600">
-                            Article
-                        </p>
-                        <a href="{% url 'public_detail' post.slug %}" class="block mt-2">
-                            <h3 class="text-xl font-bold text-gray-900 hover:text-primary-600 transition-colors duration-200">
-                                {{ post.title }}
-                            </h3>
-                            <p class="mt-3 text-base text-gray-500 line-clamp-3">
-                                {{ post.excerpt|default:post.content|truncatewords:30 }}
-                            </p>
-                        </a>
-                    </div>
-                    <div class="mt-6 flex items-center">
-                        <div class="flex-shrink-0">
-                            <span class="inline-flex items-center justify-center h-10 w-10 rounded-full bg-primary-100 text-primary-600">
-                                <i class="fas fa-user"></i>
-                            </span>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm font-medium text-gray-900">
-                                {{ post.author.get_full_name|default:post.author.username }}
-                            </p>
-                            <div class="flex space-x-1 text-sm text-gray-500">
-                                <time datetime="{{ post.created_at|date:'Y-m-d' }}">
-                                    {{ post.created_at|date:"M d, Y" }}
-                                </time>
-                                <span aria-hidden="true">&middot;</span>
-                                <span>{{ post.content|wordcount|divisibleby:200|add:"1" }} min read</span>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
+        
+        <!-- Hero: Editorial Headline -->
+        <div class="mb-20 max-w-3xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stone-100 border border-stone-200 text-xs font-bold uppercase tracking-widest text-stone-500 mb-6">
+                <span class="w-2 h-2 rounded-full bg-stone-900"></span>
+                <span>The Journal</span>
+            </div>
+            <h2 class="text-5xl md:text-7xl font-serif font-bold text-stone-900 leading-[1.1] tracking-tight mb-6">
+                Curated thoughts for <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-stone-900 via-stone-700 to-stone-500">modern builders.</span>
+            </h2>
+            <p class="text-lg text-stone-500 max-w-xl leading-relaxed">
+                Explore a collection of technical deep-dives, design philosophies, and stories from our team.
+            </p>
+        </div>
+
+        {% if blog_posts %}
+            
+            <!-- FEATURED STORY (Hero Card) -->
+            <div class="mb-24">
+                {% with featured=blog_posts|first %}
+                <div class="relative group">
+                    <!-- Card Background Blur Glow -->
+                    <div class="absolute -inset-1 bg-gradient-to-r from-stone-200 to-stone-100 rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                    
+                    <article class="relative grid grid-cols-1 lg:grid-cols-12 bg-white rounded-[1.5rem] border border-stone-200 overflow-hidden hover:shadow-md transition-all duration-300">
+                        
+                        <!-- Pattern Visual -->
+                        <div class="lg:col-span-5 h-72 lg:h-auto pattern-architect border-b lg:border-b-0 lg:border-r border-stone-100 relative group-hover:bg-stone-50 transition-colors">
+                            <div class="absolute inset-0 flex items-center justify-center opacity-10">
+                                <i class="fas fa-quote-right text-9xl text-stone-900"></i>
+                            </div>
+                            <div class="absolute top-6 left-6">
+                                <span class="bg-stone-900 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-md">
+                                    Featured
+                                </span>
                             </div>
                         </div>
-                    </div>
+
+                        <!-- Content -->
+                        <div class="lg:col-span-7 p-8 md:p-12 flex flex-col justify-center">
+                            <div class="flex items-center gap-3 mb-5">
+                                <div class="h-8 w-8 rounded-full bg-stone-100 border border-stone-200 flex items-center justify-center text-xs font-serif font-bold text-stone-900">
+                                    {{ featured.author.username|slice:":1"|upper }}
+                                </div>
+                                <div class="h-px flex-1 bg-stone-100"></div>
+                                <time class="text-xs font-mono text-stone-400 uppercase">{{ featured.created_at|date:"M d, Y" }}</time>
+                            </div>
+
+                            <a href="{% url 'public_detail' featured.slug %}" class="group-hover:text-stone-600 transition-colors">
+                                <h3 class="text-3xl md:text-4xl font-serif font-bold text-stone-900 mb-4 leading-tight">
+                                    {{ featured.title }}
+                                </h3>
+                            </a>
+
+                            <p class="text-stone-500 mb-8 leading-relaxed line-clamp-3">
+                                {{ featured.excerpt|default:featured.content|striptags|truncatewords:35 }}
+                            </p>
+
+                            <div>
+                                <a href="{% url 'public_detail' featured.slug %}" class="inline-flex items-center text-sm font-bold text-stone-900 hover:text-stone-600 transition-colors border-b-2 border-stone-900 pb-0.5 hover:border-stone-600">
+                                    Read Full Story <i class="fas fa-arrow-right ml-2 text-[10px] transform group-hover:translate-x-1 transition-transform"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </article>
                 </div>
-            </article>
-            {% empty %}
-            <div class="col-span-full text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-300">
-                <i class="fas fa-newspaper text-6xl text-gray-300 mb-4"></i>
-                <h3 class="text-xl font-medium text-gray-900">No blog posts found</h3>
-                <p class="mt-1 text-gray-500">Check back later for new content!</p>
+                {% endwith %}
             </div>
-            {% endfor %}
-        </div>
+
+            <!-- SECTION HEADER -->
+            <div class="flex items-end justify-between border-b border-stone-200 pb-4 mb-10">
+                <h3 class="text-2xl font-serif font-bold text-stone-900">Latest Writings</h3>
+                <div class="hidden sm:block text-xs font-mono text-stone-400">
+                    Page {{ page_obj.number }} / {{ paginator.num_pages }}
+                </div>
+            </div>
+
+            <!-- GRID LAYOUT -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 mb-20">
+                {% for post in blog_posts|slice:"1:" %}
+                <article class="group flex flex-col h-full bg-white rounded-2xl border border-stone-200 p-1 hover:border-stone-300 hover:shadow-md transition-all duration-300 ">
+                    
+                    <!-- Top Pattern Area -->
+                    <a href="{% url 'public_detail' post.slug %}" class="block h-48 rounded-xl overflow-hidden relative {% cycle 'pattern-architect' 'pattern-lines' %} border border-stone-100">
+                        <div class="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/[0.02] transition-colors"></div>
+                        <div class="absolute bottom-3 right-3 bg-white/90 backdrop-blur border border-stone-100 px-2 py-1 rounded text-[10px] font-mono font-bold text-stone-500">
+                            {{ post.content|wordcount|divisibleby:200|add:"1" }} min
+                        </div>
+                    </a>
+
+                    <div class="flex-1 p-5 flex flex-col">
+                        <div class="mb-3">
+                            <time class="text-[10px] font-bold uppercase tracking-wider text-stone-400">
+                                {{ post.created_at|date:"F j, Y" }}
+                            </time>
+                        </div>
+
+                        <a href="{% url 'public_detail' post.slug %}" class="block mb-3">
+                            <h4 class="text-xl font-bold text-stone-900 leading-snug group-hover:text-stone-600 transition-colors">
+                                {{ post.title }}
+                            </h4>
+                        </a>
+
+                        <p class="text-sm text-stone-500 leading-relaxed mb-6 line-clamp-2">
+                            {{ post.excerpt|default:post.content|striptags|truncatewords:20 }}
+                        </p>
+
+                        <!-- Author -->
+                        <div class="mt-auto pt-4 border-t border-stone-100 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="w-5 h-5 rounded-full bg-stone-100 flex items-center justify-center text-[9px] font-bold text-stone-600 border border-stone-200">
+                                    {{ post.author.username|slice:":1"|upper }}
+                                </span>
+                                <span class="text-xs font-bold text-stone-500">{{ post.author.get_full_name|default:post.author.username }}</span>
+                            </div>
+                            <span class="text-stone-300 group-hover:text-stone-900 transition-colors">
+                                <i class="fas fa-arrow-right text-xs"></i>
+                            </span>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+
+        {% else %}
+            <!-- Empty State -->
+            <div class="py-32 text-center bg-white rounded-[2rem] border border-stone-200 shadow-sm relative overflow-hidden">
+                <div class="absolute inset-0 pattern-architect opacity-50"></div>
+                <div class="relative z-10">
+                    <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-stone-900 text-white mb-6 shadow-md transform -rotate-6">
+                        <i class="fas fa-newspaper text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-serif font-bold text-stone-900 mb-2">The presses are stopped</h3>
+                    <p class="text-stone-500 max-w-md mx-auto mb-8">
+                        We are currently curating new stories. Please check back later for updates.
+                    </p>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'blog:create' %}" class="btn-shine-effect inline-flex items-center px-6 py-3 bg-stone-900 text-white font-bold rounded-full hover:bg-stone-800 transition-all">
+                        Write First Story
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
 
         <!-- Pagination -->
         {% if is_paginated %}
-        <nav class="mt-16 flex items-center justify-center space-x-2">
-            {% if page_obj.has_previous %}
-            <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200">
-                Previous
-            </a>
-            {% endif %}
-            
-            <span class="px-4 py-2 text-sm font-medium text-primary-700 bg-primary-50 border border-primary-200 rounded-lg">
-                Page {{ page_obj.number }} of {{ paginator.num_pages }}
-            </span>
+        <div class="flex justify-center pb-12">
+            <nav class="inline-flex bg-white rounded-full shadow-lg shadow-stone-200/50 border border-stone-200 p-1.5 gap-1">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="px-5 py-2.5 rounded-full text-sm font-bold text-stone-500 hover:bg-stone-100 hover:text-stone-900 transition-colors">
+                    Prev
+                </a>
+                {% endif %}
+                
+                <span class="px-5 py-2.5 rounded-full text-sm font-bold text-white bg-stone-900 shadow-md">
+                    {{ page_obj.number }}
+                </span>
 
-            {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200">
-                Next
-            </a>
-            {% endif %}
-        </nav>
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="px-5 py-2.5 rounded-full text-sm font-bold text-stone-500 hover:bg-stone-100 hover:text-stone-900 transition-colors">
+                    Next
+                </a>
+                {% endif %}
+            </nav>
+        </div>
         {% endif %}
+
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 mt-12">
-        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
-            &copy; 2026 Blog SaaS. All rights reserved.
+    <footer class="border-t border-stone-200 bg-white relative z-10">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2">
+                <div class="h-6 w-6 bg-stone-900 rounded text-white flex items-center justify-center text-xs font-serif font-bold">W</div>
+                <span class="font-bold text-stone-900">Wlog.</span>
+            </div>
+            <p class="text-stone-400 text-sm font-medium">
+                &copy; 2026 Blog SaaS Platform. All rights reserved.
+            </p>
+            <div class="flex gap-4">
+                <a href="#" class="text-stone-400 hover:text-stone-900 transition-colors"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="text-stone-400 hover:text-stone-900 transition-colors"><i class="fab fa-github"></i></a>
+            </div>
         </div>
     </footer>
+
 </div>
 {% endblock %}

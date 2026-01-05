@@ -1,89 +1,106 @@
 {% extends "blog/base.html" %}
 
-{% block title %}{{ title }} - Blog Admin{% endblock title %}
+{% block title %}Admin Login | Blog{% endblock title %}
 
 {% block content %}
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-        <!-- Logo and Header -->
-        <div class="text-center">
-            <div class="mx-auto h-16 w-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mb-6">
-                <i class="fas fa-blog text-white text-2xl"></i>
-            </div>
-            <h2 class="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
-            <p class="text-gray-600">Sign in to your blog admin panel</p>
+</style>
+
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    
+    <!-- Decor: Background blobs for subtle color -->
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+    <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+
+    <!-- Main Card -->
+    <div class="max-w-md w-full relative z-10">
+        
+        <!-- Back Link -->
+        <div class="mb-8 text-center">
+            <a href="{% url 'home' %}" class="inline-flex items-center text-sm font-bold text-stone-400 hover:text-stone-900 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Blog
+            </a>
         </div>
 
-        <!-- Login Form -->
-        <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        <div class="bg-white rounded-xl shadow-[0_8px_10px_rgb(0,0,0,0.04)] border border-stone-200 p-8 sm:p-10">
+            
+            <!-- Brand / Header -->
+            <div class="text-center mb-10">
+                <div class="mx-auto h-12 w-12 text-stone-900 rounded-xl flex items-center justify-center mb-6  transform -rotate-6">
+                    <i class="fas fa-feather-alt text-7xl"></i>
+                </div>
+                <h2 class="text-3xl font-serif font-bold text-stone-900 mb-2">Admin Portal</h2>
+                <p class="text-stone-500 text-sm">Enter your credentials to manage content.</p>
+            </div>
+
+            <!-- Form -->
             <form method="post" class="space-y-6" novalidate>
                 {% csrf_token %}
                 
                 <!-- Username Field -->
-                <div>
-                    <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-user mr-2 text-gray-400"></i>Username
+                <div class="space-y-2">
+                    <label for="username" class="block text-xs font-bold uppercase tracking-wider text-stone-500">
+                        Username
                     </label>
-                    <input 
-                        type="text" 
-                        id="username" 
-                        name="username" 
-                        required
-                        autofocus
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-400"
-                        placeholder="Enter your username"
-                    >
-                    <div class="invalid-feedback hidden text-red-500 text-sm mt-1"></div>
+                    <div class="relative group">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-stone-400 group-focus-within:text-indigo-600 transition-colors">
+                            <i class="fas fa-user text-sm"></i>
+                        </span>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            required
+                            autofocus
+                            class="block w-full pl-11 pr-4 py-3 bg-stone-50 border border-stone-200 rounded-md text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:bg-white input-transition sm:text-sm"
+                            placeholder="writer@example.com"
+                        >
+                    </div>
+                    <div class="invalid-feedback hidden text-red-500 text-xs font-medium ml-1"></div>
                 </div>
 
                 <!-- Password Field -->
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-lock mr-2 text-gray-400"></i>Password
+                <div class="space-y-2">
+                    <label for="password" class="block text-xs font-bold uppercase tracking-wider text-stone-500">
+                        Password
                     </label>
-                    <div class="relative">
+                    <div class="relative group">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-stone-400 group-focus-within:text-indigo-600 transition-colors">
+                            <i class="fas fa-lock text-sm"></i>
+                        </span>
                         <input 
                             type="password" 
                             id="password" 
                             name="password" 
                             required
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 pr-12"
-                            placeholder="Enter your password"
+                            class="block w-full pl-11 pr-12 py-3 bg-stone-50 border border-stone-200 rounded-md text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:bg-white input-transition sm:text-sm"
+                            placeholder="••••••••"
                         >
                         <button 
                             type="button" 
                             id="togglePassword"
-                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                            class="absolute inset-y-0 right-0 pr-4 flex items-center text-stone-400 hover:text-stone-600 transition-colors focus:outline-none"
                         >
                             <i class="fas fa-eye" id="eyeIcon"></i>
                         </button>
                     </div>
-                    <div class="invalid-feedback hidden text-red-500 text-sm mt-1"></div>
+                    <div class="invalid-feedback hidden text-red-500 text-xs font-medium ml-1"></div>
                 </div>
 
                 <!-- Submit Button -->
                 <button 
                     type="submit" 
-                    class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl"
+                    class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-bold text-white bg-stone-900 hover:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-stone-900 transition-all duration-200 transform hover:scale-105"
                 >
-                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    <i class="fas fa-sign-in-alt mr-2 mt-0.5"></i>
                     Sign In
                 </button>
             </form>
-
-            <!-- Footer -->
-            <div class="mt-6 text-center">
-                <p class="text-sm text-gray-500">
-                    <i class="fas fa-shield-alt mr-1"></i>
-                    Secure admin access for blog management
-                </p>
-            </div>
         </div>
 
-        <!-- Additional Info -->
-        <div class="text-center">
-            <p class="text-xs text-gray-400">
-                Protected by advanced security measures
+        <!-- Footer Info -->
+        <div class="mt-8 text-center space-y-2">
+            <p class="text-xs text-stone-400">
+                &copy; 2026 Blog SaaS &bull; Secure Environment
             </p>
         </div>
     </div>
@@ -111,19 +128,22 @@
             }
         });
 
+        // Updated validation logic for the new styling
         function validateField(field, message) {
             const value = field.value.trim();
             const isValid = value.length > 0;
-            const feedback = field.parentNode.querySelector('.invalid-feedback');
+            const feedback = field.parentElement.nextElementSibling; // Adjust for DOM structure
             
             if (!isValid) {
-                field.classList.add('border-red-500', 'focus:ring-red-500');
-                field.classList.remove('border-gray-300', 'focus:ring-blue-500');
+                // Error State
+                field.classList.add('border-red-300', 'focus:ring-red-200', 'bg-red-50');
+                field.classList.remove('border-stone-200', 'focus:ring-stone-900', 'bg-stone-50');
                 feedback.textContent = message;
                 feedback.classList.remove('hidden');
             } else {
-                field.classList.remove('border-red-500', 'focus:ring-red-500');
-                field.classList.add('border-gray-300', 'focus:ring-blue-500');
+                // Success/Neutral State
+                field.classList.remove('border-red-300', 'focus:ring-red-200', 'bg-red-50');
+                field.classList.add('border-stone-200', 'focus:ring-stone-900', 'bg-stone-50');
                 feedback.classList.add('hidden');
             }
             
@@ -132,29 +152,42 @@
 
         // Real-time validation
         usernameField.addEventListener('input', function() {
-            validateField(this, 'Please enter your username');
+            validateField(this, 'Username is required');
         });
 
         passwordField.addEventListener('input', function() {
-            validateField(this, 'Please enter your password');
+            validateField(this, 'Password is required');
         });
 
         // Form submission validation
         form.addEventListener('submit', function(e) {
-            const isUsernameValid = validateField(usernameField, 'Please enter your username');
-            const isPasswordValid = validateField(passwordField, 'Please enter your password');
+            const isUsernameValid = validateField(usernameField, 'Username is required');
+            const isPasswordValid = validateField(passwordField, 'Password is required');
 
             if (!isUsernameValid || !isPasswordValid) {
                 e.preventDefault();
+                // Shake animation for error
+                const card = document.querySelector('.bg-white');
+                card.classList.add('animate-[shake_0.5s_ease-in-out]');
+                setTimeout(() => card.classList.remove('animate-[shake_0.5s_ease-in-out]'), 500);
+            } else {
+                // Loading State
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalContent = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> Authenticating...';
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
             }
-        });
-
-        // Add loading state on form submission
-        form.addEventListener('submit', function() {
-            const submitBtn = form.querySelector('button[type="submit"]');
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Signing In...';
-            submitBtn.disabled = true;
         });
     });
 </script>
+
+<!-- Add shake animation for errors -->
+<style>
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+</style>
 {% endblock extra_js %}

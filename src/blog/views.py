@@ -304,9 +304,9 @@ class BlogUpdateView(LoginRequiredMixin, UpdateView):
     
     def get_success_url(self):
         """
-        Redirect to the detail view of the updated post.
+        Redirect to the post list view.
         """
-        return reverse_lazy('blog:detail', kwargs={'slug': self.object.slug})
+        return reverse_lazy('blog:list')
     
     def get_context_data(self, **kwargs):
         """
@@ -317,7 +317,7 @@ class BlogUpdateView(LoginRequiredMixin, UpdateView):
         
         context['title'] = f'Edit: {blog_post.title}'
         context['submit_text'] = 'Update Post'
-        context['cancel_url'] = reverse_lazy('blog:detail', kwargs={'slug': blog_post.slug})
+        context['cancel_url'] = reverse_lazy('blog:list')
         context['list_url'] = reverse_lazy('blog:list')
         
         return context

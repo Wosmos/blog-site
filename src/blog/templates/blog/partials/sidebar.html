@@ -1,64 +1,82 @@
-<!-- Responsive Sidebar Component -->
-<div 
+<aside 
     id="mobile-sidebar"
-    class="w-64 bg-white shadow-sm min-h-screen fixed left-0 top-16 z-40 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto drawer-transition"
+    class="w-72 bg-white min-h-screen fixed left-0 top-0 z-40 transform transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) lg:translate-x-0 lg:static border-r border-slate-100 paper-texture"
     :class="{
-        'drawer-open': drawerOpen,
-        'drawer-closed': !drawerOpen
+        'translate-x-0 shadow-2xl': drawerOpen,
+        '-translate-x-full': !drawerOpen
     }"
     x-show="drawerOpen || !isMobile"
-    x-transition:enter="transition ease-out duration-300"
-    x-transition:enter-start="-translate-x-full"
-    x-transition:enter-end="translate-x-0"
-    x-transition:leave="transition ease-in duration-300"
-    x-transition:leave-start="translate-x-0"
-    x-transition:leave-end="-translate-x-full"
 >
-    <nav class="mt-8 px-4">
-        <ul class="space-y-2">
+
+
+    <nav class="mt-10 px-6">
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-6 px-2">Main Registry</p>
+        
+        <ul class="space-y-1">
             <li>
                 <a 
                     href="{% url 'blog:admin_dashboard' %}" 
-                    class="{% if request.resolver_match.url_name == 'admin_dashboard' %}bg-blue-50 text-blue-700{% else %}text-gray-700 hover:bg-gray-50{% endif %} group flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors nav-link"
+                    class="group flex items-center px-4 py-3 text-[13px] font-bold tracking-tight rounded-xl transition-all duration-300
+                    {% if request.resolver_match.url_name == 'admin_dashboard' %}
+                        bg-slate-900 text-white shadow-lg shadow-slate-200
+                    {% else %}
+                        text-slate-500 hover:text-slate-900 hover:bg-slate-50
+                    {% endif %}"
                     @click="isMobile && closeDrawer()"
                 >
-                    <i class="fas fa-tachometer-alt mr-3 {% if request.resolver_match.url_name == 'admin_dashboard' %}text-blue-500{% else %}text-gray-400 group-hover:text-gray-500{% endif %}"></i>
+                    <i class="fa-solid fa-house-chimney mr-3 text-[14px] transition-transform group-hover:-rotate-12"></i>
                     Dashboard
                 </a>
             </li>
+
             <li>
                 <a 
                     href="{% url 'blog:list' %}" 
-                    class="{% if request.resolver_match.url_name == 'list' %}bg-blue-50 text-blue-700{% else %}text-gray-700 hover:bg-gray-50{% endif %} group flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors nav-link"
+                    class="group flex items-center px-4 py-3 text-[13px] font-bold tracking-tight rounded-xl transition-all duration-300
+                    {% if request.resolver_match.url_name == 'list' %}
+                        bg-slate-900 text-white shadow-lg shadow-slate-200
+                    {% else %}
+                        text-slate-500 hover:text-slate-900 hover:bg-slate-50
+                    {% endif %}"
                     @click="isMobile && closeDrawer()"
                 >
-                    <i class="fas fa-list mr-3 {% if request.resolver_match.url_name == 'list' %}text-blue-500{% else %}text-gray-400 group-hover:text-gray-500{% endif %}"></i>
-                    All Posts
+                    <i class="fa-solid fa-layer-group mr-3 text-[14px]"></i>
+                    Archive
                 </a>
             </li>
-            <li>
+
+            <li class="pt-4">
                 <a 
                     href="{% url 'blog:create' %}" 
-                    class="{% if request.resolver_match.url_name == 'create' %}bg-blue-50 text-blue-700{% else %}text-gray-700 hover:bg-gray-50{% endif %} group flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors nav-link"
+                    class="group flex items-center px-4 py-3 text-[13px] font-bold tracking-tight rounded-xl border border-dashed border-slate-200 text-slate-400 hover:border-indigo-500 hover:text-indigo-600 hover:bg-indigo-50/30 transition-all duration-300"
                     @click="isMobile && closeDrawer()"
                 >
-                    <i class="fas fa-plus mr-3 {% if request.resolver_match.url_name == 'create' %}text-blue-500{% else %}text-gray-400 group-hover:text-gray-500{% endif %}"></i>
-                    Create New Post
+                    <i class="fa-solid fa-plus-circle mr-3 text-[14px]"></i>
+                    Draft New Entry
                 </a>
             </li>
         </ul>
-    </nav>
-</div>
 
-<!-- Mobile Overlay -->
+        <div class="absolute bottom-8 left-8 right-8 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-slate-200 border border-white"></div>
+                <div>
+                    <p class="text-[11px] font-black text-slate-900 uppercase">Editor v2</p>
+                    <p class="text-[10px] text-slate-400 font-medium">Session Active</p>
+                </div>
+            </div>
+        </div>
+    </nav>
+</aside>
+
 <div 
     x-show="drawerOpen && isMobile"
-    x-transition:enter="transition-opacity ease-linear duration-300"
+    x-transition:enter="transition-opacity ease-out duration-500"
     x-transition:enter-start="opacity-0"
     x-transition:enter-end="opacity-100"
-    x-transition:leave="transition-opacity ease-linear duration-300"
+    x-transition:leave="transition-opacity ease-in duration-400"
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
-    class="fixed inset-0 drawer-overlay z-30 lg:hidden"
+    class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-30 lg:hidden"
     @click="closeDrawer()"
 ></div>

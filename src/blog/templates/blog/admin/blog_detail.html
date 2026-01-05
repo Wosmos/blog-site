@@ -1,342 +1,206 @@
 {% extends "blog/base.html" %}
 
-{% block title %}{{ title }} - Blog Admin{% endblock title %}
+{% block title %}{{ blog_post.title }} - Details{% endblock title %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <!-- Logo and Brand -->
-                <div class="flex items-center">
-                    <!-- Hamburger Menu Button -->
-                    {% include "blog/partials/hamburger_button.html" %}
-                    
-                    <div class="flex-shrink-0 flex items-center ml-2 lg:ml-0">
-                        <div class="h-8 w-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                            <i class="fas fa-blog text-white text-sm"></i>
-                        </div>
-                        <h1 class="text-xl font-bold text-gray-900">Blog Admin</h1>
-                    </div>
-                </div>
+<style>
+    /* Reusing the Public Theme Styles for the Preview to ensure accuracy */
+    .preview-body h1, .preview-body h2, .preview-body h3 { font-family: 'Playfair Display', serif; color: #1c1917; font-weight: 700; margin-top: 1.5em; margin-bottom: 0.5em; line-height: 1.2; }
+    .preview-body p { margin-bottom: 1.5em; color: #44403c; line-height: 1.8; font-size: 1.1rem; }
+    .preview-body a { color: #4f46e5; text-decoration: underline; text-underline-offset: 3px; }
+    .preview-body blockquote { border-left: 3px solid #4f46e5; padding-left: 1.2rem; font-style: italic; color: #57534e; margin: 2em 0; }
+    .preview-body pre { background: #1c1917; color: #f5f5f4; padding: 1.2rem; border-radius: 0.75rem; overflow-x: auto; font-size: 0.9em; margin: 1.5em 0; border: 1px solid #292524; }
+    .preview-body code { background: #f5f5f4; padding: 0.2em 0.4em; border-radius: 0.25rem; font-size: 0.85em; font-family: monospace; color: #dc2626; }
+    .preview-body ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.5em; }
+    .preview-body ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1.5em; }
+    .preview-body img { border-radius: 0.75rem; max-width: 100%; height: auto; margin: 2em 0; border: 1px solid #e7e5e4; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+    .preview-body hr { border-color: #e7e5e4; margin: 3em 0; }
+</style>
 
-                <!-- User Menu -->
-                <div class="flex items-center">
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            <div class="h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-2">
-                                <span class="text-white text-sm font-medium">{{ user.username|first|upper }}</span>
-                            </div>
-                            <span class="text-gray-700 font-medium">{{ user.get_full_name|default:user.username }}</span>
-                            <i class="fas fa-chevron-down ml-2 text-gray-400 text-xs"></i>
-                        </button>
-                        
-                        <div x-show="open" @click.away="open = false" x-transition class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                            <div class="py-1">
-                                <a href="{% url 'blog:admin_logout' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                    <i class="fas fa-sign-out-alt mr-2 text-gray-400"></i>
-                                    Sign Out
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<div class="min-h-screen bg-[#FDFDFC] font-sans text-stone-900" x-data="{ viewMode: 'preview' }">
+    
+    <!-- Centralized Header -->
+    {% include "blog/partials/header.html" %}
+
+    <!-- Action Bar -->
+    <div class="bg-white border-b border-stone-200 px-4 sm:px-6 lg:px-8 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="{% url 'blog:list' %}" class="text-stone-400 hover:text-stone-900 transition-colors" title="Back to List">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div class="h-4 w-px bg-stone-200 mx-2"></div>
+                <span class="font-bold text-stone-900 leading-none">Story Details</span>
+            </div>
+
+            <div class="flex items-center gap-3">
+                {% if blog_post.status == 'published' %}
+                <a href="{% url 'public_detail' slug=blog_post.slug %}" target="_blank" class="hidden sm:inline-flex items-center px-4 py-2 text-sm font-bold text-stone-500 hover:text-indigo-600 transition-colors">
+                    <i class="fas fa-external-link-alt mr-2 text-xs"></i> View Live
+                </a>
+                {% endif %}
+                <a href="{% url 'blog:update' slug=blog_post.slug %}" class="inline-flex items-center px-5 py-2 bg-stone-900 hover:bg-stone-800 text-white text-sm font-bold rounded-full shadow-lg transition-all hover:-translate-y-0.5">
+                    <i class="fas fa-edit mr-2 text-xs"></i> Edit Story
+                </a>
             </div>
         </div>
-    </nav>
+    </div>
 
-    <div class="flex">
-        <!-- Responsive Sidebar -->
-        {% include "blog/partials/sidebar.html" %}
-        
-        <!-- Main Content -->
-        <div class="flex-1 p-8 lg:ml-0">
-            <!-- Page Header -->
-            <div class="flex justify-between items-center mb-8">
-                <div>
-                    <h2 class="text-3xl font-bold text-gray-900">{{ title }}</h2>
-                    <p class="text-gray-600 mt-1">View and manage blog post details</p>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- LEFT COLUMN: Main Content "The Paper" -->
+            <div class="lg:col-span-8">
+                
+                <!-- View Toggle -->
+                <div class="mb-6 flex justify-between items-center">
+                    <h2 class="text-xs font-bold text-stone-400 uppercase tracking-widest">Content Preview</h2>
+                    <div class="flex bg-white rounded-lg border border-stone-200 p-0.5">
+                        <button @click="viewMode = 'preview'" :class="viewMode === 'preview' ? 'bg-stone-100 text-stone-900 font-bold shadow-sm' : 'text-stone-500 hover:text-stone-700'" class="px-3 py-1.5 text-xs rounded-md transition-all">
+                            <i class="fas fa-eye mr-1.5"></i> Visual
+                        </button>
+                        <button @click="viewMode = 'markdown'" :class="viewMode === 'markdown' ? 'bg-stone-100 text-stone-900 font-bold shadow-sm' : 'text-stone-500 hover:text-stone-700'" class="px-3 py-1.5 text-xs rounded-md transition-all">
+                            <i class="fas fa-code mr-1.5"></i> Code
+                        </button>
+                    </div>
                 </div>
-                <div class="flex space-x-3">
-                    <a href="{{ list_url }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        Back to Posts
-                    </a>
-                    <a href="{% url 'blog:update' slug=blog_post.slug %}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                        <i class="fas fa-edit mr-2"></i>
-                        Edit Post
-                    </a>
+
+                <!-- The "Paper" Card -->
+                <div class="bg-white rounded-xl border border-stone-200 shadow-sm min-h-[600px] overflow-hidden relative">
+                    
+                    <!-- Decorative Top Bar -->
+                    <div class="h-1.5 w-full bg-gradient-to-r from-stone-200 via-stone-300 to-stone-200"></div>
+
+                    <!-- VISUAL MODE -->
+                    <div x-show="viewMode === 'preview'" class="p-8 sm:p-12 transition-opacity duration-200" x-transition.opacity>
+                        <!-- Title (As it appears on the page) -->
+                        <h1 class="text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-8 leading-tight">
+                            {{ blog_post.title }}
+                        </h1>
+                        
+                        <!-- Content -->
+                        <div class="preview-body">
+                            {{ rendered_content|safe }}
+                        </div>
+                    </div>
+
+                    <!-- RAW MARKDOWN MODE -->
+                    <div x-show="viewMode === 'markdown'" class="absolute inset-0 bg-[#1e1e1e] overflow-auto" style="display: none;">
+                        <div class="p-0">
+                            <!-- Code Header -->
+                            <div class="sticky top-0 z-10 bg-[#2d2d2d] border-b border-stone-700 px-4 py-2 flex items-center justify-between">
+                                <span class="text-xs font-mono text-stone-400">markdown-source.md</span>
+                                <span class="text-xs text-stone-500">{{ blog_post.content|length }} chars</span>
+                            </div>
+                            <!-- Raw Code -->
+                            <pre class="p-6 text-sm font-mono text-[#d4d4d4] leading-relaxed whitespace-pre-wrap">{{ blog_post.content }}</pre>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            
-            <!-- Blog Post Preview -->
-            <div class="space-y-6">
-                <!-- Post Meta Information -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-                    <div class="px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-900">Post Information</h3>
-                    </div>
-                    <div class="p-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="space-y-4">
-                                <div>
-                                    <dt class="text-sm font-medium text-gray-500">Title:</dt>
-                                    <dd class="mt-1 text-sm text-gray-900">{{ blog_post.title }}</dd>
-                                </div>
-                                
-                                <div>
-                                    <dt class="text-sm font-medium text-gray-500">Slug:</dt>
-                                    <dd class="mt-1 text-sm text-gray-900"><code class="bg-gray-100 px-2 py-1 rounded">{{ blog_post.slug }}</code></dd>
-                                </div>
-                                
-                                <div>
-                                    <dt class="text-sm font-medium text-gray-500">Status:</dt>
-                                    <dd class="mt-1">
-                                        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {% if blog_post.status == 'published' %}bg-green-100 text-green-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
-                                            {{ blog_post.get_status_display }}
-                                        </span>
-                                    </dd>
-                                </div>
-                                
-                                <div>
-                                    <dt class="text-sm font-medium text-gray-500">Author:</dt>
-                                    <dd class="mt-1 text-sm text-gray-900">{{ blog_post.author.get_full_name|default:blog_post.author.username }}</dd>
-                                </div>
-                            </div>
-                            <div class="space-y-4">
-                                <div>
-                                    <dt class="text-sm font-medium text-gray-500">Created:</dt>
-                                    <dd class="mt-1 text-sm text-gray-900">
-                                        {{ blog_post.created_at|date:"F d, Y" }} at {{ blog_post.created_at|time:"g:i A" }}
-                                    </dd>
-                                </div>
-                                
-                                <div>
-                                    <dt class="text-sm font-medium text-gray-500">Updated:</dt>
-                                    <dd class="mt-1 text-sm text-gray-900">
-                                        {{ blog_post.updated_at|date:"F d, Y" }} at {{ blog_post.updated_at|time:"g:i A" }}
-                                    </dd>
-                                </div>
-                                
-                                {% if blog_post.excerpt %}
-                                <div>
-                                    <dt class="text-sm font-medium text-gray-500">Excerpt:</dt>
-                                    <dd class="mt-1 text-sm text-gray-900">{{ blog_post.excerpt|truncatewords:20 }}</dd>
-                                </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                </div>
+            <!-- RIGHT COLUMN: Metadata Sidebar -->
+            <div class="lg:col-span-4 space-y-6">
                 
-                <!-- Post Content Preview -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-                    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-                        <h3 class="text-lg font-semibold text-gray-900">Content Preview</h3>
-                        <div class="flex items-center space-x-2">
-                            <button 
-                                type="button" 
-                                onclick="showPreview()"
-                                id="preview-btn"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors"
-                            >
-                                Preview
-                            </button>
-                            <button 
-                                type="button" 
-                                onclick="showMarkdown()"
-                                id="markdown-btn"
-                                class="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors"
-                            >
-                                Markdown
-                            </button>
-                        </div>
+                <!-- Status Card -->
+                <div class="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
+                    <h3 class="text-sm font-bold text-stone-900 uppercase tracking-wider mb-4 border-b border-stone-100 pb-2">Publishing</h3>
+                    
+                    <!-- Status Indicator -->
+                    <div class="flex items-center justify-between mb-6">
+                        <span class="text-sm font-medium text-stone-500">Current Status</span>
+                        {% if blog_post.status == 'published' %}
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 border border-green-100">
+                                <span class="relative flex h-2 w-2">
+                                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                  <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                </span>
+                                <span class="text-xs font-bold text-green-700 uppercase tracking-wide">Live</span>
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-100">
+                                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                                <span class="text-xs font-bold text-amber-700 uppercase tracking-wide">Draft</span>
+                            </span>
+                        {% endif %}
                     </div>
-                    <div class="p-6">
-                        <!-- Rendered Content -->
-                        <div id="content-preview" class="prose prose-lg max-w-none">
-                            {{ rendered_content|safe }}
+
+                    <!-- Meta Grid -->
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3">
+                            <div class="mt-0.5 text-stone-400"><i class="fas fa-user-circle"></i></div>
+                            <div>
+                                <p class="text-xs font-bold text-stone-400 uppercase">Author</p>
+                                <p class="text-sm font-medium text-stone-900">{{ blog_post.author.get_full_name|default:blog_post.author.username }}</p>
+                            </div>
                         </div>
-                        
-                        <!-- Raw Markdown -->
-                        <div id="content-markdown" style="display: none;">
-                            <pre class="bg-gray-100 p-4 rounded-lg overflow-x-auto"><code>{{ blog_post.content }}</code></pre>
+
+                        <div class="flex items-start gap-3">
+                            <div class="mt-0.5 text-stone-400"><i class="fas fa-calendar-alt"></i></div>
+                            <div>
+                                <p class="text-xs font-bold text-stone-400 uppercase">Published Date</p>
+                                <p class="text-sm font-medium text-stone-900">{{ blog_post.created_at|date:"F j, Y" }}</p>
+                                <p class="text-xs text-stone-400">{{ blog_post.created_at|time:"g:i A" }}</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <div class="mt-0.5 text-stone-400"><i class="fas fa-history"></i></div>
+                            <div>
+                                <p class="text-xs font-bold text-stone-400 uppercase">Last Updated</p>
+                                <p class="text-sm font-medium text-stone-900">{{ blog_post.updated_at|date:"M d, Y" }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Technical Details -->
+                <div class="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
+                    <h3 class="text-sm font-bold text-stone-900 uppercase tracking-wider mb-4 border-b border-stone-100 pb-2">SEO & Technical</h3>
+                    
+                    <div class="mb-4">
+                        <p class="text-xs font-bold text-stone-400 uppercase mb-1">Slug</p>
+                        <div class="bg-stone-50 border border-stone-200 rounded px-2 py-1.5 font-mono text-xs text-stone-600 break-all select-all">
+                            {{ blog_post.slug }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <p class="text-xs font-bold text-stone-400 uppercase mb-1">Excerpt</p>
+                        {% if blog_post.excerpt %}
+                            <p class="text-sm text-stone-600 leading-relaxed italic">
+                                "{{ blog_post.excerpt }}"
+                            </p>
+                        {% else %}
+                            <p class="text-xs text-stone-400 italic">No excerpt generated.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Danger Zone (Optional but good for admin) -->
+                <div class="border border-red-100 rounded-xl p-6 bg-red-50/30">
+                     <h3 class="text-xs font-bold text-red-800 uppercase tracking-wider mb-2">Danger Zone</h3>
+                     <button onclick="confirmDelete()" class="w-full text-center px-4 py-2 border border-red-200 bg-white text-red-600 text-sm font-bold rounded-lg hover:bg-red-50 transition-colors">
+                        Delete Post
+                     </button>
+                </div>
+
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    function confirmDelete() {
+        if(confirm('Are you sure you want to delete this post? This cannot be undone.')) {
+            // Add your delete URL logic here, usually a POST form submission
+            alert('Delete functionality to be connected.');
+        }
+    }
+</script>
 {% endblock content %}
 
-{% block extra_css %}
-<style>
-    .blog-content {
-        line-height: 1.6;
-        font-size: 1.1rem;
-    }
-    
-    .blog-content h1,
-    .blog-content h2,
-    .blog-content h3,
-    .blog-content h4,
-    .blog-content h5,
-    .blog-content h6 {
-        margin-top: 2rem;
-        margin-bottom: 1rem;
-        font-weight: 600;
-    }
-    
-    .blog-content h1 {
-        font-size: 2.5rem;
-        border-bottom: 2px solid #dee2e6;
-        padding-bottom: 0.5rem;
-    }
-    
-    .blog-content h2 {
-        font-size: 2rem;
-        border-bottom: 1px solid #dee2e6;
-        padding-bottom: 0.3rem;
-    }
-    
-    .blog-content h3 {
-        font-size: 1.5rem;
-    }
-    
-    .blog-content p {
-        margin-bottom: 1.5rem;
-    }
-    
-    .blog-content blockquote {
-        border-left: 4px solid #007bff;
-        padding-left: 1rem;
-        margin: 1.5rem 0;
-        color: #6c757d;
-        font-style: italic;
-    }
-    
-    .blog-content code {
-        background-color: #f8f9fa;
-        padding: 0.2rem 0.4rem;
-        border-radius: 0.25rem;
-        font-size: 0.9em;
-        color: #e83e8c;
-    }
-    
-    .blog-content pre {
-        background-color: #f8f9fa;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        overflow-x: auto;
-        margin: 1.5rem 0;
-    }
-    
-    .blog-content pre code {
-        background-color: transparent;
-        padding: 0;
-        color: inherit;
-    }
-    
-    .blog-content ul,
-    .blog-content ol {
-        margin-bottom: 1.5rem;
-        padding-left: 2rem;
-    }
-    
-    .blog-content li {
-        margin-bottom: 0.5rem;
-    }
-    
-    .blog-content table {
-        width: 100%;
-        margin-bottom: 1.5rem;
-        border-collapse: collapse;
-    }
-    
-    .blog-content table th,
-    .blog-content table td {
-        padding: 0.75rem;
-        border: 1px solid #dee2e6;
-    }
-    
-    .blog-content table th {
-        background-color: #f8f9fa;
-        font-weight: 600;
-    }
-    
-    .blog-content img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 0.5rem;
-        margin: 1rem 0;
-    }
-    
-    .blog-content a {
-        color: #007bff;
-        text-decoration: none;
-    }
-    
-    .blog-content a:hover {
-        text-decoration: underline;
-    }
-    
-    .card-header .btn-group .btn {
-        border-radius: 0.25rem;
-    }
-    
-    .card-header .btn-group .btn.active {
-        background-color: #007bff;
-        border-color: #007bff;
-        color: white;
-    }
-    
-    #content-markdown pre {
-        max-height: 400px;
-        overflow-y: auto;
-    }
-    
-    .dl-horizontal dt {
-        font-weight: 600;
-        color: #495057;
-    }
-    
-    .dl-horizontal dd {
-        margin-bottom: 0.5rem;
-    }
-</style>
-{% endblock %}
-
 {% block extra_js %}
-<script>
-    function showPreview() {
-        document.getElementById('content-preview').style.display = 'block';
-        document.getElementById('content-markdown').style.display = 'none';
-        
-        const previewBtn = document.getElementById('preview-btn');
-        const markdownBtn = document.getElementById('markdown-btn');
-        
-        previewBtn.className = 'px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors';
-        markdownBtn.className = 'px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors';
-    }
-    
-    function showMarkdown() {
-        document.getElementById('content-preview').style.display = 'none';
-        document.getElementById('content-markdown').style.display = 'block';
-        
-        const previewBtn = document.getElementById('preview-btn');
-        const markdownBtn = document.getElementById('markdown-btn');
-        
-        markdownBtn.className = 'px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors';
-        previewBtn.className = 'px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors';
-    }
-    
-    // Initialize with preview mode
-    document.addEventListener('DOMContentLoaded', function() {
-        showPreview();
-    });
-</script>
+<!-- Alpine.js is assumed to be loaded in base.html or via the CDN in previous blocks -->
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 {% endblock extra_js %}

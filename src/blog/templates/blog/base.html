@@ -1,37 +1,73 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-gray-50">
+<html lang="en" class="h-full scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ title|default:"Blog Admin" }}{% endblock %}</title>
+    <title>{% block title %}{{ title|default:"Blog Platform" }}{% endblock %}</title>
     
-    <!-- Tailwind CSS -->
+    <!-- 1. Google Fonts: Playfair (Serif) & Plus Jakarta Sans (Sans) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- 2. Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Flowbite CSS -->
+    <!-- 3. Flowbite -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
     
-    <!-- Font Awesome for icons -->
+    <!-- 4. Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- Custom Tailwind Config -->
+    <!-- 5. Custom Configuration -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                    },
                     colors: {
+                        // Mapping "gray" to "stone" for that warm paper feel
+                        gray: {
+                            50: '#fafaf9',
+                            100: '#f5f5f4',
+                            200: '#e7e5e4',
+                            300: '#d6d3d1',
+                            400: '#a8a29e',
+                            500: '#78716c',
+                            600: '#57534e',
+                            700: '#44403c',
+                            800: '#292524',
+                            900: '#1c1917',
+                        },
+                        // Modern Indigo Primary
                         primary: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            200: '#bfdbfe',
-                            300: '#93c5fd',
-                            400: '#60a5fa',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            800: '#1e40af',
-                            900: '#1e3a8a',
-                            950: '#172554'
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            300: '#a5b4fc',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
                         }
                     }
                 }
@@ -39,103 +75,88 @@
         }
     </script>
     
-    <!-- Custom CSS for drawer animations -->
     <style>
-        /* Drawer Animation Classes */
+        /* Base styles for the 'Paper' aesthetic */
+        body {
+            background-color: #FAFAF9; /* Stone-50 */
+            color: #292524; /* Stone-800 */
+            background-image: radial-gradient(#D6D3D1 1px, transparent 1px);
+            background-size: 24px 24px;
+            background-attachment: fixed;
+        }
+
+        /* Selection color */
+        ::selection {
+            background-color: #E0E7FF; /* Indigo-100 */
+            color: #4338CA; /* Indigo-700 */
+        }
+
+        /* Drawer Transitions */
         .drawer-transition {
-            transition: transform 300ms ease-in-out;
-            transform: translate3d(0, 0, 0); /* Hardware acceleration */
-        }
-        
-        .drawer-closed {
-            transform: translate3d(-100%, 0, 0);
-        }
-        
-        .drawer-open {
+            transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1); /* Smooth bezier */
             transform: translate3d(0, 0, 0);
-        }
-        
-        /* Desktop override */
-        @media (min-width: 1024px) {
-            .drawer-transition {
-                transform: translate3d(0, 0, 0) !important;
-            }
-        }
-        
-        /* Responsive breakpoint handling */
-        @media (max-width: 767px) {
-            .drawer-transition {
-                position: fixed;
-                top: 4rem; /* Account for navigation header */
-                left: 0;
-                height: calc(100vh - 4rem);
-                z-index: 40;
-            }
-        }
-        
-        /* Smooth transitions for responsive changes */
-        @media (prefers-reduced-motion: no-preference) {
-            .drawer-transition {
-                transition: transform 300ms ease-in-out, width 0ms, height 0ms;
-            }
-        }
-        
-        /* Respect user's motion preferences */
-        @media (prefers-reduced-motion: reduce) {
-            .drawer-transition {
-                transition: none;
-            }
-        }
-        
-        /* Overlay animation */
-        .drawer-overlay {
-            background: rgba(0, 0, 0, 0.5);
-            transition: opacity 300ms ease-in-out;
-        }
-        
-        /* Performance optimizations */
-        .drawer-transition {
             will-change: transform;
         }
         
-        .drawer-overlay {
-            will-change: opacity;
+        .drawer-closed { transform: translate3d(-100%, 0, 0); }
+        .drawer-open { transform: translate3d(0, 0, 0); }
+        
+        /* Desktop override */
+        @media (min-width: 1024px) {
+            .drawer-transition { transform: translate3d(0, 0, 0) !important; }
         }
         
-        /* Navigation link transitions */
-        .nav-link {
-            transition: all 300ms ease-in-out;
+        @media (max-width: 767px) {
+            .drawer-transition {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 50;
+            }
         }
-        
-        .nav-link:active {
-            transform: scale(0.98);
-        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #fafaf9; }
+        ::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a29e; }
+
+        /* General Utilities */
+        .input-transition { transition: all 0.2s ease-in-out; }
     </style>
     
     {% block extra_css %}{% endblock %}
 </head>
-<body class="h-full" x-data="drawerStore()">
+<body class="h-full antialiased" x-data="drawerStore()">
+    
     {% block body %}
-    <!-- Messages -->
+    
+    <!-- Modern Toast Notifications -->
     {% if messages %}
-        <div class="fixed top-4 right-4 z-50 space-y-2">
+        <div class="fixed top-6 right-6 z-[60] space-y-3 pointer-events-none">
             {% for message in messages %}
-                <div id="toast-{{ forloop.counter }}" class="flex items-center w-full max-w-xs p-4 mb-4 text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
-                    <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 {% if message.tags == 'success' %}text-green-500 bg-green-100 rounded-lg dark:bg-green-800 dark:text-green-200{% elif message.tags == 'error' %}text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200{% elif message.tags == 'warning' %}text-orange-500 bg-orange-100 rounded-lg dark:bg-orange-700 dark:text-orange-200{% else %}text-blue-500 bg-blue-100 rounded-lg dark:bg-blue-800 dark:text-blue-200{% endif %}">
-                        {% if message.tags == 'success' %}
-                            <i class="fas fa-check"></i>
-                        {% elif message.tags == 'error' %}
-                            <i class="fas fa-times"></i>
-                        {% elif message.tags == 'warning' %}
-                            <i class="fas fa-exclamation-triangle"></i>
-                        {% else %}
-                            <i class="fas fa-info"></i>
-                        {% endif %}
+                <!-- Added animate-slide-up and pointer-events-auto -->
+                <div id="toast-{{ forloop.counter }}" class="pointer-events-auto flex items-center w-full max-w-sm p-4 bg-white rounded-xl shadow-lg border border-gray-100 animate-slide-up" role="alert">
+                    
+                    <!-- Icon Container -->
+                    <div class="inline-flex items-center justify-center flex-shrink-0 w-10 h-10 rounded-full 
+                        {% if message.tags == 'success' %}text-green-600 bg-green-50
+                        {% elif message.tags == 'error' %}text-red-600 bg-red-50
+                        {% elif message.tags == 'warning' %}text-orange-600 bg-orange-50
+                        {% else %}text-primary-600 bg-primary-50{% endif %}">
+                        
+                        {% if message.tags == 'success' %} <i class="fas fa-check"></i>
+                        {% elif message.tags == 'error' %} <i class="fas fa-bug"></i>
+                        {% elif message.tags == 'warning' %} <i class="fas fa-exclamation"></i>
+                        {% else %} <i class="fas fa-info"></i> {% endif %}
                     </div>
-                    <div class="ms-3 text-sm font-normal">{{ message }}</div>
-                    <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" data-dismiss-target="#toast-{{ forloop.counter }}" aria-label="Close">
+                    
+                    <div class="ms-3 text-sm font-medium text-gray-800">{{ message }}</div>
+                    
+                    <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-50 inline-flex items-center justify-center h-8 w-8 transition-colors" data-dismiss-target="#toast-{{ forloop.counter }}" aria-label="Close">
                         <span class="sr-only">Close</span>
-                        <i class="fas fa-times text-xs"></i>
+                        <i class="fas fa-times"></i>
                     </button>
                 </div>
             {% endfor %}
@@ -143,25 +164,25 @@
     {% endif %}
     
     {% block content %}{% endblock %}
+    
     {% endblock %}
     
-    <!-- Alpine.js for interactive components -->
+    <!-- Scripts -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
-    <!-- Flowbite JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
     
-    <!-- Auto-dismiss toasts -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Auto-dismiss toasts after 5 seconds
+            // Auto-dismiss toasts after 5 seconds with fade effect
             const toasts = document.querySelectorAll('[id^="toast-"]');
             toasts.forEach(toast => {
                 setTimeout(() => {
+                    toast.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
                     toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(-10px)';
                     setTimeout(() => {
                         toast.remove();
-                    }, 300);
+                    }, 500);
                 }, 5000);
             });
         });
@@ -174,34 +195,27 @@
                 lastFocusedElement: null,
                 
                 get isMobile() {
-                    return window.innerWidth < 768;
+                    return window.innerWidth < 1024; // Updated to match standard LG breakpoint
                 },
                 
                 toggleDrawer() {
-                    if (!this.drawerOpen) {
-                        this.openDrawer();
-                    } else {
-                        this.closeDrawer();
-                    }
+                    this.drawerOpen ? this.closeDrawer() : this.openDrawer();
                 },
                 
                 openDrawer() {
-                    // Store the currently focused element for restoration later
                     this.lastFocusedElement = document.activeElement;
                     this.drawerOpen = true;
+                    document.body.style.overflow = 'hidden'; // Prevent background scrolling
                     
-                    // Focus management for mobile drawer
                     if (this.isMobile) {
-                        this.$nextTick(() => {
-                            this.focusFirstDrawerElement();
-                        });
+                        this.$nextTick(() => { this.focusFirstDrawerElement(); });
                     }
                 },
                 
                 closeDrawer() {
                     this.drawerOpen = false;
+                    document.body.style.overflow = ''; // Restore scrolling
                     
-                    // Restore focus to the hamburger button when drawer closes
                     if (this.isMobile && this.lastFocusedElement) {
                         this.$nextTick(() => {
                             this.lastFocusedElement.focus();
@@ -211,32 +225,27 @@
                 },
                 
                 focusFirstDrawerElement() {
-                    // Focus the first navigation link in the drawer
-                    const firstNavLink = document.querySelector('#mobile-sidebar .nav-link');
-                    if (firstNavLink) {
-                        firstNavLink.focus();
-                    }
+                    const firstNavLink = document.querySelector('#mobile-sidebar .nav-link, #mobile-sidebar a, #mobile-sidebar button');
+                    if (firstNavLink) firstNavLink.focus();
                 },
                 
                 handleKeydown(event) {
-                    // Handle Escape key to close drawer
                     if (event.key === 'Escape' && this.drawerOpen && this.isMobile) {
                         event.preventDefault();
                         this.closeDrawer();
                     }
-                    
-                    // Handle Tab key for focus trapping in mobile drawer
                     if (event.key === 'Tab' && this.drawerOpen && this.isMobile) {
                         this.handleTabKeyInDrawer(event);
                     }
                 },
                 
+                // Fixed: Completed the logic that was cut off
                 handleTabKeyInDrawer(event) {
                     const drawer = document.getElementById('mobile-sidebar');
                     if (!drawer) return;
                     
                     const focusableElements = drawer.querySelectorAll(
-                        'a[href], button, [tabindex]:not([tabindex="-1"])'
+                        'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select'
                     );
                     
                     if (focusableElements.length === 0) return;
@@ -244,75 +253,40 @@
                     const firstElement = focusableElements[0];
                     const lastElement = focusableElements[focusableElements.length - 1];
                     
-                    // If Shift+Tab on first element, focus last element
-       
-                
-                closeDrawerWithDelay() {
-                    // Close drawer with a small delay for smooth navigation
-                    this.drawerOpen = false;
-                    return new Promise(resolve => setTimeout(resolve, 100));
+                    if (event.shiftKey) {
+                        // Shift + Tab: If on first element, move to last
+                        if (document.activeElement === firstElement) {
+                            lastElement.focus();
+                            event.preventDefault();
+                        }
+                    } else {
+                        // Tab: If on last element, move to first
+                        if (document.activeElement === lastElement) {
+                            firstElement.focus();
+                            event.preventDefault();
+                        }
+                    }
                 },
                 
                 handleResize() {
-                    // Close drawer when switching from mobile to desktop
                     if (!this.isMobile && this.drawerOpen) {
                         this.drawerOpen = false;
+                        document.body.style.overflow = '';
                     }
                 },
                 
                 debouncedResize() {
-                    // Clear existing timeout
-                    if (this.resizeTimeout) {
-                        clearTimeout(this.resizeTimeout);
-                    }
-                    
-                    // Set new timeout for debounced resize handling
-                    this.resizeTimeout = setTimeout(() => {
-                        this.handleResize();
-                    }, 150); // 150ms debounce delay for optimal performance
-                },
-                
-                handleOrientationChange() {
-                    // Handle device orientation changes
-                    setTimeout(() => {
-                        this.handleResize();
-                    }, 100); // Small delay to ensure viewport dimensions are updated
-                },
-                
-                resetDrawerState() {
-                    // Reset drawer state based on current viewport
-                    if (!this.isMobile) {
-                        this.drawerOpen = false;
-                    }
+                    if (this.resizeTimeout) clearTimeout(this.resizeTimeout);
+                    this.resizeTimeout = setTimeout(() => { this.handleResize(); }, 150);
                 },
                 
                 init() {
-                    // Handle window resize with debouncing
-                    window.addEventListener('resize', () => {
-                        this.debouncedResize();
-                    });
+                    window.addEventListener('resize', () => this.debouncedResize());
+                    window.addEventListener('orientationchange', () => setTimeout(() => this.handleResize(), 100));
                     
-                    // Handle orientation change on mobile devices
-                    window.addEventListener('orientationchange', () => {
-                        this.handleOrientationChange();
-                    });
+                    // Clean up on page navigation
+                    window.addEventListener('beforeunload', () => { this.drawerOpen = false; });
                     
-                    // Close drawer on page navigation (beforeunload)
-                    window.addEventListener('beforeunload', () => {
-                        this.drawerOpen = false;
-                    });
-                    
-                    // Handle visibility change (when user switches tabs/apps)
-                    document.addEventListener('visibilitychange', () => {
-                        if (document.hidden && this.isMobile && this.drawerOpen) {
-                            this.drawerOpen = false;
-                        }
-                    });
-                    
-                    // Close drawer when page loads (ensures clean state)
-                    this.drawerOpen = false;
-                    
-                    // Initial resize check
                     this.handleResize();
                 }
             }
