@@ -20,15 +20,35 @@
         background-color: transparent !important;
     }
     
-    /* Elegant Headings within content */
-    .markdown-body h1, .markdown-body h2, .markdown-body h3 {
-        font-family: 'Playfair Display', serif !important;
-        color: #1c1917 !important; /* Stone 900 */
-        font-weight: 700 !important;
-        margin-top: 2em !important;
-        margin-bottom: 0.75em !important;
-        border-bottom: none !important;
-        letter-spacing: -0.02em;
+    /* Blockquotes */
+    .markdown-body blockquote {
+        border-left: 4px solid #4f46e5 !important;
+        color: #57534e !important;
+        background: #f5f5f4 !important; /* Stone 100 */
+        padding: 1.5rem !important;
+        font-style: italic;
+        border-radius: 0 8px 8px 0;
+    }
+
+    /* Dark Mode Overrides for Markdown */
+    .dark .markdown-body {
+        color: #d6d3d1 !important; /* Stone 300 */
+    }
+    .dark .markdown-body h1, .dark .markdown-body h2, .dark .markdown-body h3 {
+        color: #fafaf9 !important; /* Stone 50 */
+    }
+    .dark .markdown-body blockquote {
+        background: #1c1917 !important;
+        color: #a8a29e !important;
+        border-left-color: #6366f1 !important;
+    }
+    .dark .markdown-body code {
+        background-color: #292524 !important;
+        color: #e7e5e4 !important;
+    }
+    .dark .markdown-body pre {
+        background-color: #0c0a09 !important;
+        border-color: #292524;
     }
 
     /* Links */
@@ -42,23 +62,9 @@
         color: #312e81 !important;
         text-decoration-color: #4f46e5;
     }
-
-    /* Blockquotes */
-    .markdown-body blockquote {
-        border-left: 4px solid #4f46e5 !important;
-        color: #57534e !important;
-        background: #f5f5f4 !important; /* Stone 100 */
-        padding: 1.5rem !important;
-        font-style: italic;
-        border-radius: 0 8px 8px 0;
-    }
-
-    /* Code Blocks */
-    .markdown-body pre {
-        background-color: #1c1917 !important; /* Dark mode code block */
-        border-radius: 12px !important;
-        border: 1px solid #292524;
-        color: #f5f5f4 !important;
+    .dark .markdown-body a {
+        color: #818cf8 !important;
+        text-decoration-color: #4338ca;
     }
 
     /* Patterns for header */
@@ -66,66 +72,74 @@
         background-image: linear-gradient(#E7E5E4 1px, transparent 1px), linear-gradient(90deg, #E7E5E4 1px, transparent 1px);
         background-size: 20px 20px;
     }
+    .dark .pattern-grid {
+        background-image: linear-gradient(#292524 1px, transparent 1px), linear-gradient(90deg, #292524 1px, transparent 1px);
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-[#FDFDFC]">
+<div class="min-h-screen">
     
-    <!-- Top Nav / Back Button -->
-    <nav class=" mx-auto pt-8 px-4 sm:px-6 lg:px-8">
-        <a href="{% url 'home' %}" class="group inline-flex items-center text-sm font-bold text-stone-500 hover:text-stone-900 transition-colors duration-200">
+    <!-- Top Nav / Back Button & Toggle -->
+    <nav class="mx-auto pt-8 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        <a href="{% url 'home' %}" class="group inline-flex items-center text-sm font-bold text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 transition-colors duration-200">
             <i class="fas fa-arrow-left mr-2 transition-transform group-hover:-translate-x-1"></i>
             Back to Articles
         </a>
+
+        <!-- Theme Toggle -->
+        <button @click="toggleTheme()" class="p-2 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-lg transition-colors shadow-sm bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800" title="Toggle Theme">
+            <i class="fas" :class="isDark ? 'fa-sun' : 'fa-moon'"></i>
+        </button>
     </nav>
 
     <!-- Header Section -->
-    <header class=" mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+    <header class="mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
         <!-- Meta Pill -->
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stone-100 text-stone-600 text-xs font-bold uppercase tracking-wider mb-8">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 text-xs font-bold uppercase tracking-wider mb-8 border border-stone-200 dark:border-stone-700">
             <time>{{ blog_post.created_at|date:"F j, Y" }}</time>
-            <span class="text-stone-300">&bull;</span>
+            <span class="text-stone-300 dark:text-stone-600">&bull;</span>
             <span>{{ blog_post.content|wordcount|divisibleby:200|add:"1" }} min read</span>
         </div>
 
         <!-- Title -->
-        <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-stone-900 leading-[1.1] tracking-tight mb-8">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-stone-900 dark:text-stone-100 leading-[1.1] tracking-tight mb-8">
             {{ blog_post.title }}
         </h1>
 
         <!-- Author -->
         <div class="flex items-center justify-center gap-3">
-            <div class="h-10 w-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-serif font-bold text-lg shadow-md">
+            <div class="h-10 w-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-serif font-bold text-lg shadow-md ring-2 ring-white dark:ring-stone-800">
                 {{ blog_post.author.username|slice:":1"|upper }}
             </div>
             <div class="text-left">
-                <p class="text-sm font-bold text-stone-900 leading-none">
+                <p class="text-sm font-bold text-stone-900 dark:text-stone-100 leading-none">
                     {{ blog_post.author.get_full_name|default:blog_post.author.username }}
                 </p>
-                <p class="text-xs text-stone-500 mt-1">Author</p>
+                <p class="text-xs text-stone-500 dark:text-stone-400 mt-1">Author</p>
             </div>
         </div>
     </header>
 
     <!-- Main Content Wrapper -->
-    <main class="max-w-5xl  mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         
         <!-- The "Paper" Card -->
-        <article class="bg-white rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-stone-200 overflow-hidden">
+        <article class="bg-white dark:bg-stone-900 rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] dark:shadow-none border border-stone-200 dark:border-stone-800 overflow-hidden">
             
             <!-- Pattern Decoration Top (Replaces Header Image) -->
-            <div class="h-6 w-full pattern-grid bg-stone-50 border-b border-stone-100"></div>
+            <div class="h-6 w-full pattern-grid bg-stone-50 dark:bg-stone-800 border-b border-stone-100 dark:border-stone-800"></div>
 
             <div class="p-8 md:p-12">
                 <!-- Excerpt / Lead Paragraph -->
                 {% if blog_post.excerpt %}
-                <div class="mb-10 text-xl font-serif text-stone-600 leading-relaxed italic border-l-4 border-stone-200 pl-6">
+                <div class="mb-10 text-xl font-serif text-stone-600 dark:text-stone-400 leading-relaxed italic border-l-4 border-stone-200 dark:border-stone-700 pl-6">
                     {{ blog_post.excerpt }}
                 </div>
                 <!-- Subtle divider -->
                 <div class="w-full flex justify-center mb-10">
-                    <span class="text-stone-300 text-xl">***</span>
+                    <span class="text-stone-300 dark:text-stone-700 text-xl">***</span>
                 </div>
                 {% endif %}
 
@@ -136,21 +150,21 @@
             </div>
 
             <!-- Share Footer inside Card -->
-            <div class="bg-stone-50 border-t border-stone-100 px-8 py-6">
+            <div class="bg-stone-50 dark:bg-stone-800/50 border-t border-stone-100 dark:border-stone-800 px-8 py-6">
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <span class="text-sm font-bold text-stone-500 uppercase tracking-wide">Share this article</span>
+                    <span class="text-sm font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wide">Share this article</span>
                     
                     <div class="flex items-center gap-2">
-                        <button class="h-10 w-10 rounded-full bg-white border border-stone-200 text-stone-600 hover:text-[#1877F2] hover:border-[#1877F2] transition-colors flex items-center justify-center shadow-sm">
+                        <button class="h-10 w-10 rounded-full bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 hover:text-[#1877F2] dark:hover:text-[#1877F2] hover:border-[#1877F2] dark:hover:border-[#1877F2] transition-colors flex items-center justify-center shadow-sm">
                             <i class="fab fa-facebook-f"></i>
                         </button>
-                        <button class="h-10 w-10 rounded-full bg-white border border-stone-200 text-stone-600 hover:text-[#1DA1F2] hover:border-[#1DA1F2] transition-colors flex items-center justify-center shadow-sm">
+                        <button class="h-10 w-10 rounded-full bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 hover:text-[#1DA1F2] dark:hover:text-[#1DA1F2] hover:border-[#1DA1F2] dark:hover:border-[#1DA1F2] transition-colors flex items-center justify-center shadow-sm">
                             <i class="fab fa-twitter"></i>
                         </button>
-                        <button class="h-10 w-10 rounded-full bg-white border border-stone-200 text-stone-600 hover:text-[#0A66C2] hover:border-[#0A66C2] transition-colors flex items-center justify-center shadow-sm">
+                        <button class="h-10 w-10 rounded-full bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 hover:text-[#0A66C2] dark:hover:text-[#0A66C2] hover:border-[#0A66C2] dark:hover:border-[#0A66C2] transition-colors flex items-center justify-center shadow-sm">
                             <i class="fab fa-linkedin-in"></i>
                         </button>
-                        <button onclick="copyLink(this)" class="h-10 px-4 rounded-full bg-stone-900 text-white hover:bg-stone-800 transition-colors flex items-center justify-center shadow-sm text-sm font-medium gap-2">
+                        <button onclick="copyLink(this)" class="h-10 px-4 rounded-full bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors flex items-center justify-center shadow-sm text-sm font-bold gap-2">
                             <i class="fas fa-link"></i> <span class="btn-text">Copy</span>
                         </button>
                     </div>
@@ -159,19 +173,19 @@
         </article>
 
         <!-- Author Bio "Business Card" -->
-        <div class="mt-12 p-8 bg-white rounded-2xl border border-stone-200 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6 shadow-sm">
-            <div class="h-20 w-20 rounded-full bg-stone-100 flex items-center justify-center text-3xl text-stone-400 border border-stone-200 flex-shrink-0">
+        <div class="mt-12 p-8 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6 shadow-sm">
+            <div class="h-20 w-20 rounded-full bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-3xl text-stone-400 dark:text-stone-500 border border-stone-200 dark:border-stone-700 flex-shrink-0">
                 <i class="fas fa-pen-nib"></i>
             </div>
             <div>
-                <h4 class="text-lg font-serif font-bold text-stone-900">About the Author</h4>
-                <p class="mt-2 text-stone-500 leading-relaxed text-sm">
+                <h4 class="text-lg font-serif font-bold text-stone-900 dark:text-stone-100">About the Author</h4>
+                <p class="mt-2 text-stone-500 dark:text-stone-400 leading-relaxed text-sm">
                     {{ blog_post.author.get_full_name|default:blog_post.author.username }} is a dedicated writer sharing insights on technology and design. 
                     They believe in the power of words to shape thoughts.
                 </p>
                 <div class="mt-4 flex justify-center sm:justify-start gap-4">
-                    <a href="#" class="text-stone-400 hover:text-stone-900 transition-colors text-sm font-bold">Twitter</a>
-                    <a href="#" class="text-stone-400 hover:text-stone-900 transition-colors text-sm font-bold">LinkedIn</a>
+                    <a href="#" class="text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors text-sm font-bold">Twitter</a>
+                    <a href="#" class="text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors text-sm font-bold">LinkedIn</a>
                 </div>
             </div>
         </div>

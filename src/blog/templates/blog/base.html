@@ -21,7 +21,15 @@
     
     <!-- 5. Custom Configuration -->
     <script>
+        // Check for dark mode preference immediately to prevent flicker
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
@@ -83,6 +91,12 @@
             background-image: radial-gradient(#D6D3D1 1px, transparent 1px);
             background-size: 24px 24px;
             background-attachment: fixed;
+        }
+
+        .dark body {
+            background-color: #0c0a09; /* Stone-950 */
+            color: #f5f5f4; /* Stone-100 */
+            background-image: radial-gradient(#292524 1px, transparent 1px);
         }
 
         /* Selection color */
@@ -191,8 +205,20 @@
         function drawerStore() {
             return {
                 drawerOpen: false,
+                isDark: document.documentElement.classList.contains('dark'),
                 resizeTimeout: null,
                 lastFocusedElement: null,
+
+                toggleTheme() {
+                    this.isDark = !this.isDark;
+                    if (this.isDark) {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('theme', 'dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('theme', 'light');
+                    }
+                },
                 
                 get isMobile() {
                     return window.innerWidth < 1024; // Updated to match standard LG breakpoint

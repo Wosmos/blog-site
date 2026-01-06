@@ -8,28 +8,28 @@
 <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
     
     <!-- Decor: Background blobs for subtle color -->
-    <div class="absolute top-0 left-1/4 w-96 h-96 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-    <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-indigo-200 dark:bg-indigo-900/20 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-3xl opacity-20 animate-blob"></div>
+    <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-200 dark:bg-purple-900/20 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
 
     <!-- Main Card -->
     <div class="max-w-md w-full relative z-10">
         
         <!-- Back Link -->
         <div class="mb-8 text-center">
-            <a href="{% url 'home' %}" class="inline-flex items-center text-sm font-bold text-stone-400 hover:text-stone-900 transition-colors">
+            <a href="{% url 'home' %}" class="inline-flex items-center text-sm font-bold text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 transition-colors">
                 <i class="fas fa-arrow-left mr-2"></i> Back to Blog
             </a>
         </div>
 
-        <div class="bg-white rounded-xl shadow-[0_8px_10px_rgb(0,0,0,0.04)] border border-stone-200 p-8 sm:p-10">
+        <div class="bg-white dark:bg-stone-900 rounded-xl shadow-[0_8px_10px_rgb(0,0,0,0.04)] dark:shadow-none border border-stone-200 dark:border-stone-800 p-8 sm:p-10">
             
             <!-- Brand / Header -->
             <div class="text-center mb-10">
-                <div class="mx-auto h-12 w-12 text-stone-900 rounded-xl flex items-center justify-center mb-6  transform -rotate-6">
+                <div class="mx-auto h-12 w-12 text-stone-900 dark:text-stone-100 rounded-xl flex items-center justify-center mb-6  transform -rotate-6">
                     <i class="fas fa-feather-alt text-7xl"></i>
                 </div>
-                <h2 class="text-3xl font-serif font-bold text-stone-900 mb-2">Admin Portal</h2>
-                <p class="text-stone-500 text-sm">Enter your credentials to manage content.</p>
+                <h2 class="text-3xl font-serif font-bold text-stone-900 dark:text-stone-100 mb-2">Admin Portal</h2>
+                <p class="text-stone-500 dark:text-stone-400 text-sm">Enter your credentials to manage content.</p>
             </div>
 
             <!-- Form -->
@@ -38,11 +38,11 @@
                 
                 <!-- Username Field -->
                 <div class="space-y-2">
-                    <label for="username" class="block text-xs font-bold uppercase tracking-wider text-stone-500">
+                    <label for="username" class="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
                         Username
                     </label>
                     <div class="relative group">
-                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-stone-400 group-focus-within:text-indigo-600 transition-colors">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-stone-400 group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400 transition-colors">
                             <i class="fas fa-user text-sm"></i>
                         </span>
                         <input 
@@ -51,7 +51,7 @@
                             name="username" 
                             required
                             autofocus
-                            class="block w-full pl-11 pr-4 py-3 bg-stone-50 border border-stone-200 rounded-md text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:bg-white input-transition sm:text-sm"
+                            class="block w-full pl-11 pr-4 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-md text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-600 focus:outline-none focus:ring-2 focus:ring-stone-900 dark:focus:ring-indigo-500 focus:bg-white dark:focus:bg-stone-800 input-transition sm:text-sm"
                             placeholder="writer@example.com"
                         >
                     </div>
@@ -60,11 +60,11 @@
 
                 <!-- Password Field -->
                 <div class="space-y-2">
-                    <label for="password" class="block text-xs font-bold uppercase tracking-wider text-stone-500">
+                    <label for="password" class="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
                         Password
                     </label>
                     <div class="relative group">
-                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-stone-400 group-focus-within:text-indigo-600 transition-colors">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-stone-400 group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400 transition-colors">
                             <i class="fas fa-lock text-sm"></i>
                         </span>
                         <input 
@@ -72,13 +72,13 @@
                             id="password" 
                             name="password" 
                             required
-                            class="block w-full pl-11 pr-12 py-3 bg-stone-50 border border-stone-200 rounded-md text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-900 focus:bg-white input-transition sm:text-sm"
+                            class="block w-full pl-11 pr-12 py-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-md text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-600 focus:outline-none focus:ring-2 focus:ring-stone-900 dark:focus:ring-indigo-500 focus:bg-white dark:focus:bg-stone-800 input-transition sm:text-sm"
                             placeholder="••••••••"
                         >
                         <button 
                             type="button" 
                             id="togglePassword"
-                            class="absolute inset-y-0 right-0 pr-4 flex items-center text-stone-400 hover:text-stone-600 transition-colors focus:outline-none"
+                            class="absolute inset-y-0 right-0 pr-4 flex items-center text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 transition-colors focus:outline-none"
                         >
                             <i class="fas fa-eye" id="eyeIcon"></i>
                         </button>
@@ -89,7 +89,7 @@
                 <!-- Submit Button -->
                 <button 
                     type="submit" 
-                    class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-bold text-white bg-stone-900 hover:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-stone-900 transition-all duration-200 transform hover:scale-105"
+                    class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-bold text-white dark:text-stone-900 bg-stone-900 dark:bg-stone-100 hover:bg-stone-800 dark:hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-stone-900 transition-all duration-200 transform hover:scale-105"
                 >
                     <i class="fas fa-sign-in-alt mr-2 mt-0.5"></i>
                     Sign In

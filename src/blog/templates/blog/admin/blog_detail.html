@@ -5,16 +5,24 @@
 {% block content %}
 <style>
     /* Reusing the Public Theme Styles for the Preview to ensure accuracy */
+    /* Reusing the Public Theme Styles for the Preview to ensure accuracy */
     .preview-body h1, .preview-body h2, .preview-body h3 { font-family: 'Playfair Display', serif; color: #1c1917; font-weight: 700; margin-top: 1.5em; margin-bottom: 0.5em; line-height: 1.2; }
+    .dark .preview-body h1, .dark .preview-body h2, .dark .preview-body h3 { color: #f5f5f4; }
     .preview-body p { margin-bottom: 1.5em; color: #44403c; line-height: 1.8; font-size: 1.1rem; }
+    .dark .preview-body p { color: #a8a29e; }
     .preview-body a { color: #4f46e5; text-decoration: underline; text-underline-offset: 3px; }
+    .dark .preview-body a { color: #818cf8; }
     .preview-body blockquote { border-left: 3px solid #4f46e5; padding-left: 1.2rem; font-style: italic; color: #57534e; margin: 2em 0; }
+    .dark .preview-body blockquote { color: #78716c; border-left-color: #6366f1; }
     .preview-body pre { background: #1c1917; color: #f5f5f4; padding: 1.2rem; border-radius: 0.75rem; overflow-x: auto; font-size: 0.9em; margin: 1.5em 0; border: 1px solid #292524; }
     .preview-body code { background: #f5f5f4; padding: 0.2em 0.4em; border-radius: 0.25rem; font-size: 0.85em; font-family: monospace; color: #dc2626; }
+    .dark .preview-body code { background: #292524; color: #f87171; }
     .preview-body ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.5em; }
     .preview-body ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1.5em; }
     .preview-body img { border-radius: 0.75rem; max-width: 100%; height: auto; margin: 2em 0; border: 1px solid #e7e5e4; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+    .dark .preview-body img { border-color: #44403c; }
     .preview-body hr { border-color: #e7e5e4; margin: 3em 0; }
+    .dark .preview-body hr { border-color: #44403c; }
 </style>
 
 <div class="min-h-screen bg-[#FDFDFC] font-sans text-stone-900" x-data="{ viewMode: 'preview' }">
@@ -23,23 +31,23 @@
     {% include "blog/partials/header.html" %}
 
     <!-- Action Bar -->
-    <div class="bg-white border-b border-stone-200 px-4 sm:px-6 lg:px-8 py-3">
+    <div class="bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 px-4 sm:px-6 lg:px-8 py-3">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-4">
-                <a href="{% url 'blog:list' %}" class="text-stone-400 hover:text-stone-900 transition-colors" title="Back to List">
+                <a href="{% url 'blog:list' %}" class="text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 transition-colors" title="Back to List">
                     <i class="fas fa-arrow-left"></i>
                 </a>
-                <div class="h-4 w-px bg-stone-200 mx-2"></div>
-                <span class="font-bold text-stone-900 leading-none">Story Details</span>
+                <div class="h-4 w-px bg-stone-200 dark:bg-stone-800 mx-2"></div>
+                <span class="font-bold text-stone-900 dark:text-stone-100 leading-none">Story Details</span>
             </div>
 
             <div class="flex items-center gap-3">
                 {% if blog_post.status == 'published' %}
-                <a href="{% url 'public_detail' slug=blog_post.slug %}" target="_blank" class="hidden sm:inline-flex items-center px-4 py-2 text-sm font-bold text-stone-500 hover:text-indigo-600 transition-colors">
+                <a href="{% url 'public_detail' slug=blog_post.slug %}" target="_blank" class="hidden sm:inline-flex items-center px-4 py-2 text-sm font-bold text-stone-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
                     <i class="fas fa-external-link-alt mr-2 text-xs"></i> View Live
                 </a>
                 {% endif %}
-                <a href="{% url 'blog:update' slug=blog_post.slug %}" class="inline-flex items-center px-5 py-2 bg-stone-900 hover:bg-stone-800 text-white text-sm font-bold rounded-full shadow-lg transition-all hover:-translate-y-0.5">
+                <a href="{% url 'blog:update' slug=blog_post.slug %}" class="inline-flex items-center px-5 py-2 bg-stone-900 dark:bg-stone-100 hover:bg-stone-800 dark:hover:bg-stone-200 text-white dark:text-stone-900 text-sm font-bold rounded-full shadow-lg transition-all hover:-translate-y-0.5">
                     <i class="fas fa-edit mr-2 text-xs"></i> Edit Story
                 </a>
             </div>
@@ -54,27 +62,27 @@
                 
                 <!-- View Toggle -->
                 <div class="mb-6 flex justify-between items-center">
-                    <h2 class="text-xs font-bold text-stone-400 uppercase tracking-widest">Content Preview</h2>
-                    <div class="flex bg-white rounded-lg border border-stone-200 p-0.5">
-                        <button @click="viewMode = 'preview'" :class="viewMode === 'preview' ? 'bg-stone-100 text-stone-900 font-bold shadow-sm' : 'text-stone-500 hover:text-stone-700'" class="px-3 py-1.5 text-xs rounded-md transition-all">
+                    <h2 class="text-xs font-bold text-stone-400 dark:text-stone-500 uppercase tracking-widest">Content Preview</h2>
+                    <div class="flex bg-white dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 p-0.5">
+                        <button @click="viewMode = 'preview'" :class="viewMode === 'preview' ? 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-bold shadow-sm' : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-300'" class="px-3 py-1.5 text-xs rounded-md transition-all">
                             <i class="fas fa-eye mr-1.5"></i> Visual
                         </button>
-                        <button @click="viewMode = 'markdown'" :class="viewMode === 'markdown' ? 'bg-stone-100 text-stone-900 font-bold shadow-sm' : 'text-stone-500 hover:text-stone-700'" class="px-3 py-1.5 text-xs rounded-md transition-all">
+                        <button @click="viewMode = 'markdown'" :class="viewMode === 'markdown' ? 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-bold shadow-sm' : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-300'" class="px-3 py-1.5 text-xs rounded-md transition-all">
                             <i class="fas fa-code mr-1.5"></i> Code
                         </button>
                     </div>
                 </div>
 
                 <!-- The "Paper" Card -->
-                <div class="bg-white rounded-xl border border-stone-200 shadow-sm min-h-[600px] overflow-hidden relative">
+                <div class="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800 shadow-sm min-h-[600px] overflow-hidden relative">
                     
                     <!-- Decorative Top Bar -->
-                    <div class="h-1.5 w-full bg-gradient-to-r from-stone-200 via-stone-300 to-stone-200"></div>
+                    <div class="h-1.5 w-full bg-gradient-to-r from-stone-200 via-stone-300 to-stone-200 dark:from-stone-800 dark:via-stone-700 dark:to-stone-800"></div>
 
                     <!-- VISUAL MODE -->
                     <div x-show="viewMode === 'preview'" class="p-8 sm:p-12 transition-opacity duration-200" x-transition.opacity>
                         <!-- Title (As it appears on the page) -->
-                        <h1 class="text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-8 leading-tight">
+                        <h1 class="text-4xl md:text-5xl font-serif font-bold text-stone-900 dark:text-stone-100 mb-8 leading-tight">
                             {{ blog_post.title }}
                         </h1>
                         
@@ -103,24 +111,24 @@
             <div class="lg:col-span-4 space-y-6">
                 
                 <!-- Status Card -->
-                <div class="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
-                    <h3 class="text-sm font-bold text-stone-900 uppercase tracking-wider mb-4 border-b border-stone-100 pb-2">Publishing</h3>
+                <div class="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800 shadow-sm p-6">
+                    <h3 class="text-sm font-bold text-stone-900 dark:text-stone-100 uppercase tracking-wider mb-4 border-b border-stone-100 dark:border-stone-800 pb-2">Publishing</h3>
                     
                     <!-- Status Indicator -->
                     <div class="flex items-center justify-between mb-6">
-                        <span class="text-sm font-medium text-stone-500">Current Status</span>
+                        <span class="text-sm font-medium text-stone-500 dark:text-stone-400">Current Status</span>
                         {% if blog_post.status == 'published' %}
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 border border-green-100">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800">
                                 <span class="relative flex h-2 w-2">
                                   <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                                   <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                                 </span>
-                                <span class="text-xs font-bold text-green-700 uppercase tracking-wide">Live</span>
+                                <span class="text-xs font-bold text-green-700 dark:text-green-400 uppercase tracking-wide">Live</span>
                             </span>
                         {% else %}
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 border border-amber-100">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800">
                                 <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                                <span class="text-xs font-bold text-amber-700 uppercase tracking-wide">Draft</span>
+                                <span class="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wide">Draft</span>
                             </span>
                         {% endif %}
                     </div>
@@ -128,51 +136,51 @@
                     <!-- Meta Grid -->
                     <div class="space-y-4">
                         <div class="flex items-start gap-3">
-                            <div class="mt-0.5 text-stone-400"><i class="fas fa-user-circle"></i></div>
+                            <div class="mt-0.5 text-stone-400 dark:text-stone-600"><i class="fas fa-user-circle"></i></div>
                             <div>
-                                <p class="text-xs font-bold text-stone-400 uppercase">Author</p>
-                                <p class="text-sm font-medium text-stone-900">{{ blog_post.author.get_full_name|default:blog_post.author.username }}</p>
+                                <p class="text-xs font-bold text-stone-400 dark:text-stone-500 uppercase">Author</p>
+                                <p class="text-sm font-medium text-stone-900 dark:text-stone-100">{{ blog_post.author.get_full_name|default:blog_post.author.username }}</p>
                             </div>
                         </div>
 
                         <div class="flex items-start gap-3">
-                            <div class="mt-0.5 text-stone-400"><i class="fas fa-calendar-alt"></i></div>
+                            <div class="mt-0.5 text-stone-400 dark:text-stone-600"><i class="fas fa-calendar-alt"></i></div>
                             <div>
-                                <p class="text-xs font-bold text-stone-400 uppercase">Published Date</p>
-                                <p class="text-sm font-medium text-stone-900">{{ blog_post.created_at|date:"F j, Y" }}</p>
-                                <p class="text-xs text-stone-400">{{ blog_post.created_at|time:"g:i A" }}</p>
+                                <p class="text-xs font-bold text-stone-400 dark:text-stone-500 uppercase">Published Date</p>
+                                <p class="text-sm font-medium text-stone-900 dark:text-stone-100">{{ blog_post.created_at|date:"F j, Y" }}</p>
+                                <p class="text-xs text-stone-400 dark:text-stone-500">{{ blog_post.created_at|time:"g:i A" }}</p>
                             </div>
                         </div>
 
                         <div class="flex items-start gap-3">
-                            <div class="mt-0.5 text-stone-400"><i class="fas fa-history"></i></div>
+                            <div class="mt-0.5 text-stone-400 dark:text-stone-600"><i class="fas fa-history"></i></div>
                             <div>
-                                <p class="text-xs font-bold text-stone-400 uppercase">Last Updated</p>
-                                <p class="text-sm font-medium text-stone-900">{{ blog_post.updated_at|date:"M d, Y" }}</p>
+                                <p class="text-xs font-bold text-stone-400 dark:text-stone-500 uppercase">Last Updated</p>
+                                <p class="text-sm font-medium text-stone-900 dark:text-stone-100">{{ blog_post.updated_at|date:"M d, Y" }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Technical Details -->
-                <div class="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
-                    <h3 class="text-sm font-bold text-stone-900 uppercase tracking-wider mb-4 border-b border-stone-100 pb-2">SEO & Technical</h3>
+                <div class="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800 shadow-sm p-6">
+                    <h3 class="text-sm font-bold text-stone-900 dark:text-stone-100 uppercase tracking-wider mb-4 border-b border-stone-100 dark:border-stone-800 pb-2">SEO & Technical</h3>
                     
                     <div class="mb-4">
-                        <p class="text-xs font-bold text-stone-400 uppercase mb-1">Slug</p>
-                        <div class="bg-stone-50 border border-stone-200 rounded px-2 py-1.5 font-mono text-xs text-stone-600 break-all select-all">
+                        <p class="text-xs font-bold text-stone-400 dark:text-stone-500 uppercase mb-1">Slug</p>
+                        <div class="bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded px-2 py-1.5 font-mono text-xs text-stone-600 dark:text-stone-400 break-all select-all">
                             {{ blog_post.slug }}
                         </div>
                     </div>
 
                     <div>
-                        <p class="text-xs font-bold text-stone-400 uppercase mb-1">Excerpt</p>
+                        <p class="text-xs font-bold text-stone-400 dark:text-stone-500 uppercase mb-1">Excerpt</p>
                         {% if blog_post.excerpt %}
-                            <p class="text-sm text-stone-600 leading-relaxed italic">
+                            <p class="text-sm text-stone-600 dark:text-stone-400 leading-relaxed italic">
                                 "{{ blog_post.excerpt }}"
                             </p>
                         {% else %}
-                            <p class="text-xs text-stone-400 italic">No excerpt generated.</p>
+                            <p class="text-xs text-stone-400 dark:text-stone-500 italic">No excerpt generated.</p>
                         {% endif %}
                     </div>
                 </div>

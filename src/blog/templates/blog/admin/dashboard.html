@@ -14,75 +14,75 @@
             
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
                 <div class="space-y-2">
-                    <p class="text-[11px] font-black text-indigo-600 uppercase tracking-[0.3em]">Admin Dashboard</p>
-                    <h2 class="text-5xl font-black text-slate-900 tracking-tighter">
-                        Hello, <span class="text-slate-400 italic font-medium">{{ user.username|title }}</span>.
+                    <p class="text-[11px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.3em]">Admin Dashboard</p>
+                    <h2 class="text-5xl font-black text-slate-900 dark:text-stone-100 tracking-tighter">
+                        Hello, <span class="text-slate-400 dark:text-stone-500 italic font-medium">{{ user.username|title }}</span>.
                     </h2>
                 </div>
                 
-                <div class="max-w-md bg-white border-l-4 border-indigo-500 p-6 rounded-r-2xl shadow-sm">
-                    <p class="text-slate-600 italic text-sm font-medium leading-relaxed">
+                <div class="max-w-md bg-white dark:bg-stone-900 border-l-4 border-indigo-500 p-6 rounded-r-2xl shadow-sm border dark:border-stone-800">
+                    <p class="text-slate-600 dark:text-stone-400 italic text-sm font-medium leading-relaxed">
                         "The secret of change is to focus all of your energy, not on fighting the old, but on building the new."
                     </p>
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-3">— Socrates</p>
+                    <p class="text-[10px] font-black text-slate-400 dark:text-stone-500 uppercase tracking-widest mt-3">— Socrates</p>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                <div class="bg-white border border-slate-100 p-8 rounded-2xl shadow-sm hover:shadow-md transition-all group">
+                <div class="bg-white dark:bg-stone-900 border border-slate-100 dark:border-stone-800 p-8 rounded-2xl shadow-sm hover:shadow-md transition-all group">
                     <div class="flex justify-between items-start mb-4">
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Stories</span>
-                        <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-indigo-500 group-hover:text-white transition-colors">
+                        <span class="text-[10px] font-black text-slate-400 dark:text-stone-500 uppercase tracking-widest">Total Stories</span>
+                        <div class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-stone-800 flex items-center justify-center group-hover:bg-indigo-500 group-hover:text-white transition-colors">
                             <i class="fas fa-book-open text-xs"></i>
                         </div>
                     </div>
-                    <div class="text-4xl font-black text-slate-900 tracking-tighter">{{ total_posts }}</div>
-                    <p class="text-[10px] text-slate-400 font-bold mt-2 uppercase">Life-to-date</p>
+                    <div class="text-4xl font-black text-slate-900 dark:text-stone-100 tracking-tighter">{{ total_posts }}</div>
+                    <p class="text-[10px] text-slate-400 dark:text-stone-500 font-bold mt-2 uppercase">Life-to-date</p>
                 </div>
 
-                <div class="bg-white border border-slate-100 p-8 rounded-2xl shadow-sm hover:shadow-md transition-all group">
+                <div class="bg-white dark:bg-stone-900 border border-slate-100 dark:border-stone-800 p-8 rounded-2xl shadow-sm hover:shadow-md transition-all group">
                     <div class="flex justify-between items-start mb-4">
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Live Now</span>
-                        <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-green-500 group-hover:text-white transition-colors">
+                        <span class="text-[10px] font-black text-slate-400 dark:text-stone-500 uppercase tracking-widest">Live Now</span>
+                        <div class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-stone-800 flex items-center justify-center group-hover:bg-green-500 group-hover:text-white transition-colors">
                             <i class="fas fa-check-circle text-xs"></i>
                         </div>
                     </div>
-                    <div class="text-4xl font-black text-slate-900 tracking-tighter">{{ published_posts }}</div>
+                    <div class="text-4xl font-black text-slate-900 dark:text-stone-100 tracking-tighter">{{ published_posts }}</div>
                     <p class="text-[10px] text-green-500 font-bold mt-2 uppercase">Currently Public</p>
                 </div>
 
-                <div class="bg-white border border-slate-100 p-8 rounded-2xl shadow-sm hover:shadow-md transition-all group">
+                <div class="bg-white dark:bg-stone-900 border border-slate-100 dark:border-stone-800 p-8 rounded-2xl shadow-sm hover:shadow-md transition-all group">
                     <div class="flex justify-between items-start mb-4">
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">In Progress</span>
-                        <div class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors">
+                        <span class="text-[10px] font-black text-slate-400 dark:text-stone-500 uppercase tracking-widest">In Progress</span>
+                        <div class="w-8 h-8 rounded-lg bg-slate-50 dark:bg-stone-800 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors">
                             <i class="fas fa-pen-fancy text-xs"></i>
                         </div>
                     </div>
-                    <div class="text-4xl font-black text-slate-900 tracking-tighter">{{ draft_posts }}</div>
+                    <div class="text-4xl font-black text-slate-900 dark:text-stone-100 tracking-tighter">{{ draft_posts }}</div>
                     <p class="text-[10px] text-amber-500 font-bold mt-2 uppercase">Needs attention</p>
                 </div>
 
-                <div class="bg-slate-900 p-8 rounded-2xl shadow-xl shadow-slate-200 group">
+                <div class="bg-slate-900 dark:bg-stone-100 p-8 rounded-2xl shadow-xl shadow-slate-200 dark:shadow-none group">
                     <div class="flex justify-between items-start mb-4">
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Reach</span>
-                        <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white">
+                        <span class="text-[10px] font-black text-slate-400 dark:text-stone-800 uppercase tracking-widest">Reach</span>
+                        <div class="w-8 h-8 rounded-lg bg-white/10 dark:bg-stone-800/10 flex items-center justify-center text-white dark:text-stone-900">
                             <i class="fas fa-chart-line text-xs"></i>
                         </div>
                     </div>
-                    <div class="text-4xl font-black text-white tracking-tighter">{{ total_views }}</div>
-                    <p class="text-[10px] text-indigo-400 font-bold mt-2 uppercase">Total Readers</p>
+                    <div class="text-4xl font-black text-white dark:text-stone-900 tracking-tighter">{{ total_views }}</div>
+                    <p class="text-[10px] text-indigo-400 dark:text-indigo-600 font-bold mt-2 uppercase">Total Readers</p>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-2 bg-white border border-slate-100 p-10 rounded-xl shadow-sm">
+                <div class="lg:col-span-2 bg-white dark:bg-stone-900 border border-slate-100 dark:border-stone-800 p-10 rounded-xl shadow-sm">
                     <div class="flex items-center justify-between mb-10">
                         <div>
-                            <h3 class="text-lg font-black text-slate-900 uppercase tracking-tight">Growth Velocity</h3>
-                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-widest">Views over the last 7 days</p>
+                            <h3 class="text-lg font-black text-slate-900 dark:text-stone-100 uppercase tracking-tight">Growth Velocity</h3>
+                            <p class="text-[11px] text-slate-400 dark:text-stone-500 font-bold uppercase tracking-widest">Views over the last 7 days</p>
                         </div>
                         <div class="text-right">
-                            <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-[10px] font-black rounded-full border border-indigo-100">Live Trend</span>
+                            <span class="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 text-[10px] font-black rounded-full border border-indigo-100 dark:border-indigo-800">Live Trend</span>
                         </div>
                     </div>
                     <div class="h-[300px]">
@@ -91,23 +91,23 @@
                 </div>
 
                 <div class="space-y-6">
-                    <div class="bg-white border border-slate-100 p-8 rounded-2xl shadow-sm">
-                        <h4 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Monthly Goal</h4>
+                    <div class="bg-white dark:bg-stone-900 border border-slate-100 dark:border-stone-800 p-8 rounded-2xl shadow-sm">
+                        <h4 class="text-[11px] font-black text-slate-400 dark:text-stone-500 uppercase tracking-[0.2em] mb-6">Monthly Goal</h4>
                         <div class="flex items-end justify-between mb-2">
-                            <span class="text-2xl font-black text-slate-900">85%</span>
-                            <span class="text-[10px] font-bold text-slate-400 uppercase">12 / 15 Posts</span>
+                            <span class="text-2xl font-black text-slate-900 dark:text-stone-100">85%</span>
+                            <span class="text-[10px] font-bold text-slate-400 dark:text-stone-500 uppercase">12 / 15 Posts</span>
                         </div>
-                        <div class="h-2 w-full bg-slate-50 rounded-full overflow-hidden">
-                            <div class="h-full bg-indigo-600 rounded-full" style="width: 85%"></div>
+                        <div class="h-2 w-full bg-slate-50 dark:bg-stone-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-indigo-600 dark:bg-indigo-500 rounded-full" style="width: 85%"></div>
                         </div>
-                        <p class="text-[10px] text-slate-400 mt-4 leading-relaxed font-medium">
-                            You are <span class="text-slate-900 font-bold">3 posts away</span> from your monthly milestone. Keep the momentum!
+                        <p class="text-[10px] text-slate-400 dark:text-stone-500 mt-4 leading-relaxed font-medium">
+                            You are <span class="text-slate-900 dark:text-stone-100 font-bold">3 posts away</span> from your monthly milestone. Keep the momentum!
                         </p>
                     </div>
 
-                    <a href="{% url 'blog:create' %}" class="flex items-center justify-between w-full px-6 py-4 bg-indigo-600 rounded-2xl text-white group hover:bg-slate-900 transition-all duration-500 shadow-lg shadow-indigo-100">
+                    <a href="{% url 'blog:create' %}" class="flex items-center justify-between w-full px-6 py-4 bg-indigo-600 dark:bg-indigo-500 rounded-2xl text-white group hover:bg-slate-900 dark:hover:bg-stone-100 dark:hover:text-stone-900 transition-all duration-500 shadow-lg shadow-indigo-100 dark:shadow-none">
                         <span class="text-xl font-black tracking-tight italic">Write New Story</span>
-                        <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center group-hover:rotate-90 transition-transform">
+                        <div class="w-12 h-12 bg-white/20 dark:bg-black/20 rounded-full flex items-center justify-center group-hover:rotate-90 transition-transform">
                             <i class="fas fa-plus"></i>
                         </div>
                     </a>

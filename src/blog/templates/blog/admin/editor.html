@@ -11,39 +11,46 @@
 
     /* Preview Styles (Matching your Public Detail Page) */
     .preview-body h1, .preview-body h2, .preview-body h3, .preview-body h4, .preview-body h5, .preview-body h6 { font-family: 'Playfair Display', serif; color: #1c1917; font-weight: 700; margin-top: 1.5em; margin-bottom: 0.5em; }
+    .dark .preview-body h1, .dark .preview-body h2, .dark .preview-body h3, .dark .preview-body h4, .dark .preview-body h5, .dark .preview-body h6 { color: #f5f5f4; }
     .preview-body h1 { font-size: 2.25rem; }
     .preview-body h2 { font-size: 1.875rem; }
     .preview-body h3 { font-size: 1.5rem; }
     .preview-body h4 { font-size: 1.25rem; }
     .preview-body p { margin-bottom: 1.2em; color: #44403c; line-height: 1.7; }
+    .dark .preview-body p { color: #a8a29e; }
     .preview-body a { color: #4f46e5; text-decoration: underline; font-weight: 500; }
+    .dark .preview-body a { color: #818cf8; }
     .preview-body blockquote { border-left: 4px solid #4f46e5; padding: 0.5rem 0 0.5rem 1.5rem; font-style: italic; color: #57534e; background: #f5f5f4; margin: 1.5em 0; border-radius: 0 0.5rem 0.5rem 0; }
+    .dark .preview-body blockquote { border-left-color: #6366f1; color: #78716c; background: #1c1917; }
     .preview-body pre { background: #1c1917; color: #f5f5f4; padding: 1.25rem; border-radius: 0.75rem; overflow-x: auto; font-size: 0.9em; margin: 1.5em 0; line-height: 1.5; }
     .preview-body code { background: #f5f5f4; padding: 0.2em 0.4em; border-radius: 0.25rem; font-size: 0.9em; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; color: #dc2626; }
+    .dark .preview-body code { background: #292524; color: #f87171; }
     .preview-body pre code { background: transparent; padding: 0; color: inherit; font-size: inherit; }
     .preview-body ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.2em; }
     .preview-body ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1.2em; }
     .preview-body li { margin-bottom: 0.5em; }
     .preview-body img { border-radius: 0.75rem; max-width: 100%; height: auto; margin: 2em auto; border: 1px solid #e7e5e4; display: block; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+    .dark .preview-body img { border-color: #44403c; }
     .preview-body hr { border: 0; border-top: 2px solid #e7e5e4; margin: 2.5em 0; }
+    .dark .preview-body hr { border-top-color: #44403c; }
 </style>
 
-<div class="min-h-screen bg-[#FDFDFC] font-sans text-stone-900" x-data="blogEditor()">
+<div class="min-h-screen bg-[#FDFDFC] dark:bg-stone-950 font-sans text-stone-900 dark:text-stone-100" x-data="blogEditor()">
     
     <!-- Centralized Header -->
     {% include "blog/partials/header.html" %}
 
     <!-- Editor Specific Toolbar/State Bar -->
-    <div class="bg-white border-b border-stone-200 px-4 sm:px-6 lg:px-8 py-3 sticky top-16 z-30">
+    <div class="bg-white dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 px-4 sm:px-6 lg:px-8 py-3 sticky top-16 z-30">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-4">
-                <a href="{% url 'blog:list' %}" class="text-stone-400 hover:text-stone-900 transition-colors" title="Back to List">
+                <a href="{% url 'blog:list' %}" class="text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors" title="Back to List">
                     <i class="fas fa-arrow-left"></i>
                 </a>
-                <div class="h-4 w-px bg-stone-200 mx-2"></div>
+                <div class="h-4 w-px bg-stone-200 dark:bg-stone-800 mx-2"></div>
                 
                 <div class="flex flex-col">
-                    <span class="font-bold text-stone-900 leading-none">
+                    <span class="font-bold text-stone-900 dark:text-stone-100 leading-none">
                         {% if blog_post %}Editing Story{% else %}New Story{% endif %}
                     </span>
                     {% if blog_post %}
@@ -51,23 +58,23 @@
                     {% endif %}
                 </div>
 
-                <span x-show="isDirty" class="ml-2 text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100 font-medium {% if blog_post %}animate-pulse{% endif %}">Unsaved changes</span>
-                <span x-show="autoSaved" class="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full border border-green-100 font-medium" style="display: none;" x-transition>Saved to draft</span>
+                <span x-show="isDirty" class="ml-2 text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-full border border-amber-100 dark:border-amber-800 font-medium {% if blog_post %}animate-pulse{% endif %}">Unsaved changes</span>
+                <span x-show="autoSaved" class="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded-full border border-green-100 dark:border-green-800 font-medium" style="display: none;" x-transition>Saved to draft</span>
             </div>
 
             <div class="flex items-center gap-3">
                 {% if blog_post %}
                     {% if blog_post.status == 'published' %}
-                    <a href="{% url 'public_detail' slug=blog_post.slug %}" target="_blank" class="hidden sm:inline-flex items-center px-4 py-2 text-sm font-bold text-stone-500 hover:text-indigo-600 transition-colors">
+                    <a href="{% url 'public_detail' slug=blog_post.slug %}" target="_blank" class="hidden sm:inline-flex items-center px-4 py-2 text-sm font-bold text-stone-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
                         <i class="fas fa-external-link-alt mr-2 text-xs"></i> View Live
                     </a>
                     {% else %}
-                    <a href="{% url 'blog:detail' slug=blog_post.slug %}" target="_blank" class="hidden sm:inline-flex items-center px-4 py-2 text-sm font-bold text-stone-400 hover:text-stone-900 transition-colors">
+                    <a href="{% url 'blog:detail' slug=blog_post.slug %}" target="_blank" class="hidden sm:inline-flex items-center px-4 py-2 text-sm font-bold text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors">
                         <i class="fas fa-eye mr-2 text-xs"></i> Preview
                     </a>
                     {% endif %}
                 {% endif %}
-                <button @click="submitForm()" class="inline-flex items-center px-6 py-2 bg-stone-900 hover:bg-stone-800 text-white text-sm font-bold rounded-full shadow-lg transition-all hover:-translate-y-0.5">
+                <button @click="submitForm()" class="inline-flex items-center px-6 py-2 bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 text-sm font-bold rounded-full shadow-lg transition-all hover:-translate-y-0.5">
                     <span>{{ submit_text|default:"Publish" }}</span>
                     <i class="fas {% if blog_post %}fa-save{% else %}fa-paper-plane{% endif %} ml-2 text-xs"></i>
                 </button>
@@ -92,7 +99,7 @@
                         name="{{ form.title.name }}"
                         x-model="title"
                         @input="handleTitleInput()"
-                        class="w-full bg-transparent border-0 border-b border-transparent focus:border-stone-200 focus:ring-0 px-0 py-4 text-4xl md:text-5xl font-serif font-bold text-stone-900 placeholder-stone-300 transition-colors"
+                        class="w-full bg-transparent border-0 border-b border-transparent focus:border-stone-200 dark:focus:border-stone-800 focus:ring-0 px-0 py-4 text-4xl md:text-5xl font-serif font-bold text-stone-900 dark:text-stone-100 placeholder-stone-300 dark:placeholder-stone-700 transition-colors"
                         placeholder="Title..."
                         required
                         autocomplete="off"
@@ -103,46 +110,46 @@
                 </div>
 
                 <!-- Editor Card -->
-                <div class="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden flex flex-col min-h-[600px]">
+                <div class="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800 shadow-sm overflow-hidden flex flex-col min-h-[600px]">
                     
                     <!-- Toolbar -->
-                    <div class="bg-stone-50 border-b border-stone-200 px-4 py-2 flex flex-wrap items-center gap-1 sticky top-0 z-10">
+                    <div class="bg-stone-50 dark:bg-stone-800/50 border-b border-stone-200 dark:border-stone-800 px-4 py-2 flex flex-wrap items-center gap-1 sticky top-0 z-10">
                         <!-- Mode Switcher -->
-                        <div class="flex bg-white rounded-lg border border-stone-200 p-0.5 mr-4">
-                            <button type="button" @click="editorMode = 'write'" :class="editorMode === 'write' ? 'bg-stone-100 text-stone-900 font-bold shadow-sm' : 'text-stone-500 hover:text-stone-700'" class="px-3 py-1.5 text-xs rounded-md transition-all">Write</button>
-                            <button type="button" @click="editorMode = 'preview'" :class="editorMode === 'preview' ? 'bg-stone-100 text-stone-900 font-bold shadow-sm' : 'text-stone-500 hover:text-stone-700'" class="px-3 py-1.5 text-xs rounded-md transition-all">Preview</button>
+                        <div class="flex bg-white dark:bg-stone-900 rounded-lg border border-stone-200 dark:border-stone-800 p-0.5 mr-4">
+                            <button type="button" @click="editorMode = 'write'" :class="editorMode === 'write' ? 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-bold shadow-sm' : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-300'" class="px-3 py-1.5 text-xs rounded-md transition-all">Write</button>
+                            <button type="button" @click="editorMode = 'preview'" :class="editorMode === 'preview' ? 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-bold shadow-sm' : 'text-stone-500 dark:text-stone-700 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-300'" class="px-3 py-1.5 text-xs rounded-md transition-all">Preview</button>
                         </div>
 
-                        <div class="h-4 w-px bg-stone-300 mx-2"></div>
+                        <div class="h-4 w-px bg-stone-300 dark:bg-stone-700 mx-2"></div>
 
                         <!-- Formatting Buttons -->
                         <div class="flex gap-1" x-show="editorMode === 'write'">
-                            <button type="button" @click="insertMarkdown('**', '**')" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Bold"><i class="fas fa-bold text-xs"></i></button>
-                            <button type="button" @click="insertMarkdown('*', '*')" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Italic"><i class="fas fa-italic text-xs"></i></button>
+                            <button type="button" @click="insertMarkdown('**', '**')" class="p-1.5 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200 dark:hover:bg-stone-700 rounded transition-colors" title="Bold"><i class="fas fa-bold text-xs"></i></button>
+                            <button type="button" @click="insertMarkdown('*', '*')" class="p-1.5 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200 dark:hover:bg-stone-700 rounded transition-colors" title="Italic"><i class="fas fa-italic text-xs"></i></button>
                             
                             <!-- Headings Dropdown -->
                             <div class="relative" x-data="{ open: false }" @click.away="open = false">
-                                <button type="button" @click="open = !open" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Headings">
+                                <button type="button" @click="open = !open" class="p-1.5 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200 dark:hover:bg-stone-700 rounded transition-colors" title="Headings">
                                     <i class="fas fa-heading text-xs"></i>
                                 </button>
-                                <div x-show="open" class="absolute left-0 mt-1 w-32 bg-white border border-stone-200 rounded-lg shadow-xl z-50 py-1" style="display: none;">
-                                    <button type="button" @click="insertMarkdown('# ', ''); open = false" class="w-full text-left px-3 py-1.5 text-xs hover:bg-stone-50 font-bold text-stone-700 border-l-2 border-transparent hover:border-stone-900 transition-all">Heading 1</button>
-                                    <button type="button" @click="insertMarkdown('## ', ''); open = false" class="w-full text-left px-3 py-1.5 text-xs hover:bg-stone-50 font-bold text-stone-700 border-l-2 border-transparent hover:border-stone-900 transition-all">Heading 2</button>
-                                    <button type="button" @click="insertMarkdown('### ', ''); open = false" class="w-full text-left px-3 py-1.5 text-xs hover:bg-stone-50 font-bold text-stone-700 border-l-2 border-transparent hover:border-stone-900 transition-all">Heading 3</button>
-                                    <button type="button" @click="insertMarkdown('#### ', ''); open = false" class="w-full text-left px-3 py-1.5 text-xs hover:bg-stone-50 font-bold text-stone-700 border-l-2 border-transparent hover:border-stone-900 transition-all">Heading 4</button>
+                                <div x-show="open" class="absolute left-0 mt-1 w-32 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-lg shadow-xl z-50 py-1" style="display: none;">
+                                    <button type="button" @click="insertMarkdown('# ', ''); open = false" class="w-full text-left px-3 py-1.5 text-xs hover:bg-stone-50 dark:hover:bg-stone-700 font-bold text-stone-700 dark:text-stone-300 border-l-2 border-transparent hover:border-stone-900 dark:hover:border-stone-100 transition-all">Heading 1</button>
+                                    <button type="button" @click="insertMarkdown('## ', ''); open = false" class="w-full text-left px-3 py-1.5 text-xs hover:bg-stone-50 dark:hover:bg-stone-700 font-bold text-stone-700 dark:text-stone-300 border-l-2 border-transparent hover:border-stone-900 dark:hover:border-stone-100 transition-all">Heading 2</button>
+                                    <button type="button" @click="insertMarkdown('### ', ''); open = false" class="w-full text-left px-3 py-1.5 text-xs hover:bg-stone-50 dark:hover:bg-stone-700 font-bold text-stone-700 dark:text-stone-300 border-l-2 border-transparent hover:border-stone-900 dark:hover:border-stone-100 transition-all">Heading 3</button>
+                                    <button type="button" @click="insertMarkdown('#### ', ''); open = false" class="w-full text-left px-3 py-1.5 text-xs hover:bg-stone-50 dark:hover:bg-stone-700 font-bold text-stone-700 dark:text-stone-300 border-l-2 border-transparent hover:border-stone-900 dark:hover:border-stone-100 transition-all">Heading 4</button>
                                 </div>
                             </div>
 
-                            <button type="button" @click="insertMarkdown('> ', '')" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Quote"><i class="fas fa-quote-right text-xs"></i></button>
-                            <div class="h-4 w-px bg-stone-300 mx-1 self-center"></div>
-                            <button type="button" @click="promptLink()" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Link"><i class="fas fa-link text-xs"></i></button>
-                            <button type="button" @click="promptImage()" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Image"><i class="fas fa-image text-xs"></i></button>
-                            <button type="button" @click="insertMarkdown('```\n', '\n```')" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Code Block"><i class="fas fa-code text-xs"></i></button>
-                            <button type="button" @click="insertMarkdown('`', '`')" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Inline Code"><i class="fas fa-terminal text-xs"></i></button>
-                            <div class="h-4 w-px bg-stone-300 mx-1 self-center"></div>
-                            <button type="button" @click="insertMarkdown('- ', '')" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Bullet List"><i class="fas fa-list-ul text-xs"></i></button>
-                            <button type="button" @click="insertMarkdown('1. ', '')" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Numbered List"><i class="fas fa-list-ol text-xs"></i></button>
-                            <button type="button" @click="insertMarkdown('\n---\n', '')" class="p-1.5 text-stone-500 hover:text-stone-900 hover:bg-stone-200 rounded transition-colors" title="Horizontal Rule"><i class="fas fa-minus text-xs"></i></button>
+                            <button type="button" @click="insertMarkdown('> ', '')" class="p-1.5 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200 dark:hover:bg-stone-700 rounded transition-colors" title="Quote"><i class="fas fa-quote-right text-xs"></i></button>
+                            <div class="h-4 w-px bg-stone-300 dark:bg-stone-700 mx-1 self-center"></div>
+                            <button type="button" @click="promptLink()" class="p-1.5 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200 dark:hover:bg-stone-700 rounded transition-colors" title="Link"><i class="fas fa-link text-xs"></i></button>
+                            <button type="button" @click="promptImage()" class="p-1.5 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200 dark:hover:bg-stone-700 rounded transition-colors" title="Image"><i class="fas fa-image text-xs"></i></button>
+                            <button type="button" @click="insertMarkdown('```\n', '\n```')" class="p-1.5 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200 dark:hover:bg-stone-700 rounded transition-colors" title="Code Block"><i class="fas fa-code text-xs"></i></button>
+                            <button type="button" @click="insertMarkdown('`', '`')" class="p-1.5 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200 dark:hover:bg-stone-700 rounded transition-colors" title="Inline Code"><i class="fas fa-terminal text-xs"></i></button>
+                            <div class="h-4 w-px bg-stone-300 dark:bg-stone-700 mx-1 self-center"></div>
+                            <button type="button" @click="insertMarkdown('- ', '')" class="p-1.5 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200 dark:hover:bg-stone-700 rounded transition-colors" title="Bullet List"><i class="fas fa-list-ul text-xs"></i></button>
+                            <button type="button" @click="insertMarkdown('1. ', '')" class="p-1.5 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200 dark:hover:bg-stone-700 rounded transition-colors" title="Numbered List"><i class="fas fa-list-ol text-xs"></i></button>
+                            <button type="button" @click="insertMarkdown('\n---\n', '')" class="p-1.5 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-200 dark:hover:bg-stone-700 rounded transition-colors" title="Horizontal Rule"><i class="fas fa-minus text-xs"></i></button>
                         </div>
                     </div>
 
@@ -154,20 +161,21 @@
                             x-model="content"
                             x-ref="contentTextarea"
                             @input="markDirty()"
-                            class="w-full h-full p-6 sm:p-8 border-0 focus:ring-0 resize-none font-mono text-sm leading-relaxed text-stone-800 bg-white"
+                            class="w-full h-full p-6 sm:p-8 border-0 focus:ring-0 resize-none font-mono text-sm leading-relaxed text-stone-800 dark:text-stone-200 bg-white dark:bg-stone-900"
                             placeholder="Tell your story..."
                             required
+                            rows="25"
                         ></textarea>
                         
                         <!-- Helper Text -->
-                        <div class="absolute bottom-4 right-4 text-xs text-stone-300 pointer-events-none group-focus-within:text-stone-400 transition-colors">
+                        <div class="absolute bottom-4 right-4 text-xs text-stone-300 dark:text-stone-600 pointer-events-none group-focus-within:text-stone-400 dark:group-focus-within:text-stone-500 transition-colors">
                             Markdown Supported
                         </div>
                     </div>
 
                     <!-- PREVIEW MODE -->
-                    <div x-show="editorMode === 'preview'" class="flex-1 p-8 sm:p-10 bg-[#FAFAF9] overflow-y-auto">
-                        <div class="max-w-none preview-body">
+                    <div x-show="editorMode === 'preview'" class="flex-1 p-8 sm:p-10 bg-[#FAFAF9] dark:bg-stone-900 overflow-y-auto">
+                        <div class="max-w-none preview-body dark:prose-invert">
                             <div x-html="renderMarkdown(content)"></div>
                             <div x-show="!content.trim()" class="flex flex-col items-center justify-center h-48 text-stone-400">
                                 <i class="fas fa-pencil-alt mb-2 text-2xl opacity-20"></i>
@@ -185,13 +193,13 @@
             <div class="lg:col-span-4 space-y-6">
                 
                 <!-- Info Card -->
-                <div class="bg-indigo-50 rounded-xl border border-indigo-100 p-4 flex items-start gap-3">
-                    <i class="fas fa-history text-indigo-500 mt-1"></i>
+                <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-xl border border-indigo-100 dark:border-indigo-800 p-4 flex items-start gap-3">
+                    <i class="fas fa-history text-indigo-500 dark:text-indigo-400 mt-1"></i>
                     <div>
-                        <h4 class="text-sm font-bold text-indigo-900">
+                        <h4 class="text-sm font-bold text-indigo-900 dark:text-indigo-100">
                             {% if blog_post %}Edit Mode{% else %}New Post{% endif %}
                         </h4>
-                        <p class="text-xs text-indigo-700 leading-relaxed mt-1">
+                        <p class="text-xs text-indigo-700 dark:text-indigo-400 leading-relaxed mt-1">
                             {% if blog_post %}
                             You are updating an existing post. Changes won't go live until you click Update.
                             {% else %}
@@ -202,17 +210,17 @@
                 </div>
 
                 <!-- Publish Settings -->
-                <div class="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
-                    <h3 class="text-sm font-bold text-stone-900 uppercase tracking-wider mb-4 border-b border-stone-100 pb-2">Settings</h3>
+                <div class="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800 shadow-sm p-6">
+                    <h3 class="text-sm font-bold text-stone-900 dark:text-stone-100 uppercase tracking-wider mb-4 border-b border-stone-100 dark:border-stone-800 pb-2">Settings</h3>
                     
                     <div class="mb-5">
-                        <label for="{{ form.status.id_for_label }}" class="block text-xs font-bold text-stone-500 mb-2">Status</label>
+                        <label for="{{ form.status.id_for_label }}" class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-2">Status</label>
                         <div class="relative">
                             <select 
                                 id="{{ form.status.id_for_label }}" 
                                 name="{{ form.status.name }}"
                                 @change="markDirty()"
-                                class="w-full pl-3 pr-10 py-2.5 bg-stone-50 border border-stone-200 rounded-lg text-sm font-medium text-stone-900 focus:ring-2 focus:ring-stone-900 focus:border-stone-900 transition-shadow appearance-none cursor-pointer"
+                                class="w-full pl-3 pr-10 py-2.5 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-lg text-sm font-medium text-stone-900 dark:text-stone-100 focus:ring-2 focus:ring-stone-900 dark:focus:ring-indigo-500 focus:border-stone-900 dark:focus:border-indigo-500 transition-shadow appearance-none cursor-pointer"
                             >
                                 <option value="draft" {% if form.status.value == 'draft' %}selected{% endif %}>Draft</option>
                                 <option value="published" {% if form.status.value == 'published' %}selected{% endif %}>Published</option>
@@ -224,20 +232,20 @@
                     </div>
 
                     <div class="mb-1">
-                        <label class="block text-xs font-bold text-stone-500 mb-2">Permalink (Slug)</label>
-                        <div class="flex items-center text-xs text-stone-400 bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 overflow-hidden">
+                        <label class="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-2">Permalink (Slug)</label>
+                        <div class="flex items-center text-xs text-stone-400 dark:text-stone-500 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-lg px-3 py-2 overflow-hidden">
                             <span class="flex-shrink-0">/posts/</span>
-                            <span x-text="slug" class="font-mono text-stone-800 ml-0.5 truncate"></span>
+                            <span x-text="slug" class="font-mono text-stone-800 dark:text-stone-200 ml-0.5 truncate"></span>
                         </div>
-                        <p class="text-[10px] text-stone-400 mt-1.5">Slugs are auto-generated from title.</p>
+                        <p class="text-[10px] text-stone-400 dark:text-stone-600 mt-1.5">Slugs are auto-generated from title.</p>
                     </div>
                 </div>
 
                 <!-- Excerpt Card -->
-                <div class="bg-white rounded-xl border border-stone-200 shadow-sm p-6">
-                    <div class="flex justify-between items-center mb-4 border-b border-stone-100 pb-2">
-                        <h3 class="text-sm font-bold text-stone-900 uppercase tracking-wider">Excerpt</h3>
-                        <span class="text-[10px] font-mono text-stone-400" :class="excerpt.length > 500 ? 'text-red-500' : ''">
+                <div class="bg-white dark:bg-stone-900 rounded-xl border border-stone-200 dark:border-stone-800 shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-4 border-b border-stone-100 dark:border-stone-800 pb-2">
+                        <h3 class="text-sm font-bold text-stone-900 dark:text-stone-100 uppercase tracking-wider">Excerpt</h3>
+                        <span class="text-[10px] font-mono text-stone-400 dark:text-stone-600" :class="excerpt.length > 500 ? 'text-red-500' : ''">
                             <span x-text="excerpt.length"></span>/500
                         </span>
                     </div>
@@ -248,21 +256,21 @@
                         x-model="excerpt"
                         @input="markDirty()"
                         rows="4"
-                        class="w-full p-3 bg-stone-50 border border-stone-200 rounded-lg text-sm text-stone-800 focus:ring-2 focus:ring-stone-900 focus:border-stone-900 focus:bg-white transition-all resize-none"
+                        class="w-full p-3 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-lg text-sm text-stone-800 dark:text-stone-200 focus:ring-2 focus:ring-stone-900 dark:focus:ring-indigo-500 focus:border-stone-900 dark:focus:border-indigo-500 focus:bg-white dark:focus:bg-stone-800 transition-all resize-none"
                         placeholder="Write a short summary..."
                         maxlength="500"
                     ></textarea>
                 </div>
 
                 <!-- Tips Card -->
-                <div class="bg-gradient-to-br from-stone-50 to-indigo-50/30 rounded-xl border border-stone-100 p-5">
+                <div class="bg-gradient-to-br from-stone-50 to-indigo-50/30 dark:from-stone-900 dark:to-indigo-900/10 rounded-xl border border-stone-100 dark:border-stone-800 p-5">
                     <div class="flex items-start">
                         <div class="flex-shrink-0">
                             <i class="fas fa-magic text-indigo-400 mt-0.5"></i>
                         </div>
                         <div class="ml-3">
-                            <h4 class="text-sm font-bold text-stone-900">Markdown Magic</h4>
-                            <p class="text-[11px] text-stone-500 mt-1 leading-relaxed">
+                            <h4 class="text-sm font-bold text-stone-900 dark:text-stone-100">Markdown Magic</h4>
+                            <p class="text-[11px] text-stone-500 dark:text-stone-400 mt-1 leading-relaxed">
                                 Use `#` for headers, `**` for bold, and `[link](url)` for connections. Your changes are automatically saved as a draft in your browser.
                             </p>
                         </div>
