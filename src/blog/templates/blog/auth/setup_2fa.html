@@ -1,0 +1,182 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Setup 2FA | Blog{% endblock title %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+
+    <!-- Decor: Background blobs for subtle color -->
+    <div class="absolute top-0 left-1/4 w-96 h-96 bg-indigo-200 dark:bg-indigo-900/20 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-3xl opacity-20 animate-blob"></div>
+    <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-200 dark:bg-purple-900/20 rounded-full mix-blend-multiply dark:mix-blend-overlay filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+
+    <!-- Main Card -->
+    <div class="max-w-md w-full relative z-10">
+
+        <!-- Back Link -->
+        <div class="mb-8 text-center">
+            <a href="{% url 'blog:admin_dashboard' %}" class="inline-flex items-center text-sm font-bold text-stone-400 dark:text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <div class="bg-white dark:bg-stone-900 rounded-xl shadow-[0_8px_10px_rgb(0,0,0,0.04)] dark:shadow-none border border-stone-200 dark:border-stone-800 p-8 sm:p-10">
+
+            <!-- Brand / Header -->
+            <div class="text-center mb-10">
+                <div class="mx-auto h-40 w-40 text-stone-900 dark:text-stone-100 rounded-xl flex items-center justify-center mb-6  transform -rotate-6">
+                    <i class="fas fa-shield-alt text-9xl"></i>
+                </div>
+                <h2 class="text-md font-serif font-bold text-stone-900 dark:text-stone-100 mb-3">Two-Factor Authentication</h2>
+                <!-- <p class="text-stone-500 dark:text-stone-400 text-sm">Secure your account with 2FA</p> -->
+                  <div class="p-2 max-w-xs mx-auto bg-stone-50 dark:bg-stone-800/50 rounded-lg border border-stone-200 dark:border-stone-800 mb-8">
+                    <p class="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">Status</p>
+                    <p class="text-sm font-bold text-green-600 dark:text-green-400 flex items-center justify-center">
+                        <span class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+                        Fully Operational
+                    </p>
+                </div>
+            </div>
+
+            {% if user.profile.is_2fa_enabled %}
+            <!-- Active State -->
+            <div class="text-center ">
+                
+               
+                <h3 class="text-xl font-bold text-stone-900 dark:text-stone-100 mb-2">2FA is Protected</h3>
+                <p class="text-sm text-stone-500 dark:text-stone-400 mb-8 leading-relaxed">Your account is currently secured with a second layer of defense. You will be asked for a code every time you sign in.</p>
+                
+               
+
+                <a href="{% url 'blog:disable_2fa' %}" class="inline-flex items-center justify-center w-full py-3.5 px-4 rounded-md border-2 border-red-100 dark:border-red-900/20 text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-600 hover:text-white dark:hover:bg-red-500 dark:hover:text-stone-900 transition-all duration-300">
+                    <i class="fas fa-power-off mr-2"></i> Disable Two-Factor
+                </a>
+            </div>
+            {% else %}
+            <!-- Instructions -->
+            <div class="mb-8 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <h3 class="font-bold text-blue-800 dark:text-blue-200 mb-2">Setup Instructions:</h3>
+                <ol class="list-decimal list-inside text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                    <li>Download an authenticator app (Google Authenticator, Authy, etc.)</li>
+                    <li>Scan the QR code below with your authenticator app</li>
+                    <li>Enter the 6-digit code from the app to confirm setup</li>
+                </ol>
+            </div>
+
+            <!-- QR Code -->
+            <div class="mb-8 text-center">
+                <p class="text-sm text-stone-600 dark:text-stone-400 mb-4">Scan this QR code with your authenticator app:</p>
+                <div class="inline-block bg-white p-4 rounded-lg border border-stone-200">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ qr_uri|urlencode }}" alt="QR Code" class="w-48 h-48 mx-auto">
+                </div>
+                <p class="text-xs text-stone-500 dark:text-stone-400 mt-2">Or manually enter this secret: <span class="font-mono">{{ user.profile.otp_secret }}</span></p>
+            </div>
+
+            <!-- Form -->
+            <form method="post" class="space-y-6" novalidate>
+                {% csrf_token %}
+
+                <!-- Verification Code Field -->
+                <div class="space-y-2">
+                    <label for="{{ form.verification_code.id_for_label }}" class="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                        Verification Code
+                    </label>
+                    <div class="relative group">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-stone-400 group-focus-within:text-indigo-600 dark:group-focus-within:text-indigo-400 transition-colors">
+                            <i class="fas fa-key text-sm"></i>
+                        </span>
+                        {{ form.verification_code }}
+                    </div>
+                    {% if form.verification_code.errors %}
+                        <div class="text-red-500 text-xs font-medium ml-1">{{ form.verification_code.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Submit Button -->
+                <button
+                    type="submit"
+                    class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-bold text-white dark:text-stone-900 bg-stone-900 dark:bg-stone-100 hover:bg-stone-800 dark:hover:bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-stone-900 transition-all duration-200 transform hover:scale-105"
+                >
+                    <i class="fas fa-check-circle mr-2 mt-0.5"></i>
+                    Confirm Setup
+                </button>
+            </form>
+            {% endif %}
+        </div>
+
+        <!-- Footer Info -->
+        <div class="mt-8 text-center space-y-2">
+            <p class="text-xs text-stone-400">
+                &copy; 2026 Blog SaaS &bull; Secure Environment
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const verificationField = document.getElementById('{{ form.verification_code.id_for_label }}');
+
+        // Real-time validation
+        if (verificationField) {
+            verificationField.addEventListener('input', function() {
+                validateField(this);
+            });
+        }
+
+        // Updated validation logic for the new styling
+        function validateField(field) {
+            const value = field.value.trim();
+            const isValid = value.length === 6 && /^\d+$/.test(value);
+            const feedback = field.parentElement.nextElementSibling; // Adjust for DOM structure
+
+            if (!isValid) {
+                // Error State
+                field.classList.add('border-red-300', 'focus:ring-red-200', 'bg-red-50');
+                field.classList.remove('border-stone-200', 'focus:ring-stone-900', 'bg-stone-50');
+            } else {
+                // Success/Neutral State
+                field.classList.remove('border-red-300', 'focus:ring-red-200', 'bg-red-50');
+                field.classList.add('border-stone-200', 'focus:ring-stone-900', 'bg-stone-50');
+            }
+
+            return isValid;
+        }
+
+        // Form submission validation
+        form.addEventListener('submit', function(e) {
+            let allValid = true;
+            
+            if (verificationField && !validateField(verificationField)) {
+                allValid = false;
+            }
+
+            if (!allValid) {
+                e.preventDefault();
+                // Shake animation for error
+                const card = document.querySelector('.bg-white');
+                card.classList.add('animate-[shake_0.5s_ease-in-out]');
+                setTimeout(() => card.classList.remove('animate-[shake_0.5s_ease-in-out]'), 500);
+            } else {
+                // Loading State
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalContent = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> Verifying...';
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+            }
+        });
+    });
+</script>
+
+<!-- Add shake animation for errors -->
+<style>
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+</style>
+{% endblock extra_js %}

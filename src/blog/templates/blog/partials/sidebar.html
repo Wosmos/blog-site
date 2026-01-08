@@ -57,6 +57,26 @@
             </li>
         </ul>
 
+        <p class="text-[10px] font-bold text-slate-400 dark:text-stone-500 uppercase tracking-[0.2em] mt-10 mb-6 px-2">Account Security</p>
+        
+        <ul class="space-y-1">
+            <li>
+                <a 
+                    href="{% url 'blog:setup_2fa' %}" 
+                    class="group flex items-center px-4 py-3 text-[13px] font-bold tracking-tight rounded-xl transition-all duration-300
+                    {% if request.resolver_match.url_name == 'setup_2fa' %}
+                        bg-slate-900 dark:bg-stone-100 text-white dark:text-stone-900 shadow-lg shadow-slate-200 dark:shadow-none
+                    {% else %}
+                        text-slate-500 dark:text-stone-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-stone-800
+                    {% endif %}"
+                    @click="isMobile && closeDrawer()"
+                >
+                    <i class="fa-solid fa-shield-halved mr-3 text-[14px]"></i>
+                    {% if user.profile.is_2fa_enabled %}2FA Active{% else %}Setup 2FA{% endif %}
+                </a>
+            </li>
+        </ul>
+
         <div class="absolute bottom-8 left-8 right-8 p-4 bg-slate-50 dark:bg-stone-800/50 rounded-2xl border border-slate-100 dark:border-stone-800">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-stone-700 border border-white dark:border-stone-600"></div>
